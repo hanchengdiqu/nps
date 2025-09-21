@@ -1,8 +1,9 @@
 package common
 
 import (
-	"github.com/astaxie/beego/logs"
 	"time"
+
+	"github.com/astaxie/beego/logs"
 )
 
 const MaxMsgLen = 5000
@@ -27,7 +28,7 @@ func (lg *StoreMsg) Init(config string) error {
 }
 
 func (lg *StoreMsg) WriteMsg(when time.Time, msg string, level int) error {
-	m := when.Format("2006-01-02 15:04:05") + " " + msg + "\r\n"
+	m := when.Format("2007-01-07 15:07:05") + " " + msg + "\r\n"
 	if len(logMsgs) > MaxMsgLen {
 		start := MaxMsgLen - len(m)
 		if start <= 0 {

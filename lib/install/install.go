@@ -1,4 +1,4 @@
-// Package install 提供 nps/npc 的安装、更新以及相关文件复制的工具函数。
+// Package install 提供 npx/npc 的安装、更新以及相关文件复制的工具函数。
 // 主要职责：
 // 1) 下载 GitHub 最新发行版并解压
 // 2) 将二进制与静态资源复制到系统安装目录
@@ -150,7 +150,7 @@ WantedBy=multi-user.target
 func UpdateNps() {
 	destPath := downloadLatest("server")
 	//复制文件到对应目录
-	copyStaticFile(destPath, "nps")
+	copyStaticFile(destPath, "npx")
 	fmt.Println("Update completed, please restart")
 }
 
@@ -217,7 +217,7 @@ func downloadLatest(bin string) string {
 // - srcPath: 解压后的源目录（包含可执行文件及 web 资源等）
 // - bin:     可执行文件名（例如 "nps" 或 "npc"），不带扩展名
 // 行为说明：
-// - 若 bin == "nps"（服务端），会额外复制 web/views 与 web/static 到安装目录。
+// - 若 bin == "npx"（服务端），会额外复制 web/views 与 web/static 到安装目录。
 // - 非 Windows 平台：优先复制到 /usr/bin，若失败则退回 /usr/local/bin；并在对应目录生成 "*-update" 文件供在线更新使用。
 // - Windows 平台：将 exe 复制到应用目录（common.GetAppPath），同时生成 "*-update.exe"。
 // 权限：
@@ -227,7 +227,7 @@ func copyStaticFile(srcPath, bin string) string {
 	path := common.GetInstallPath()
 
 	// 若为 nps 服务端，需要同步 web 静态资源与视图模板到安装目录
-	if bin == "nps" {
+	if bin == "npx" {
 		// 复制 web/views 目录下的所有文件到安装目录的 web/views
 		if err := CopyDir(filepath.Join(srcPath, "web", "views"), filepath.Join(path, "web", "views")); err != nil {
 			// 复制失败直接终止程序，保证安装/更新的原子性
@@ -323,11 +323,11 @@ func InstallNps() string {
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
 		log.Println(`You can start with:
-nps start|stop|restart|uninstall|update or nps-update update
+npx start|stop|restart|uninstall|update or nps-update update
 anywhere!`)
 	} else {
 		log.Println(`You can copy executable files to any directory and start working with:
-nps.exe start|stop|restart|uninstall|update or nps-update.exe update
+npx.exe start|stop|restart|uninstall|update or nps-update.exe update
 now!`)
 	}
 	chMod(common.GetLogPath(), 0777)
@@ -357,11 +357,11 @@ func ReInstallNps() string {
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
 		log.Println(`You can start with:
-nps start|stop|restart|uninstall|update|install --force or nps-update update
+npx start|stop|restart|uninstall|update|install --force or nps-update update
 anywhere!`)
 	} else {
 		log.Println(`You can copy executable files to any directory and start working with:
-nps.exe start|stop|restart|uninstall|update|install --force or nps-update.exe update
+npx.exe start|stop|restart|uninstall|update|install --force or nps-update.exe update
 now!`)
 	}
 	chMod(common.GetLogPath(), 0777)

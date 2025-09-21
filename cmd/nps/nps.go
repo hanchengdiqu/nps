@@ -51,6 +51,8 @@ func main() {
 		common.PrintVersion()
 		return
 	}
+
+	// 20250921 修改特性：配置文件查找策略：先查找安装路径，然后查找当前目录，然后都没有，就用内置配置，这样不会报错
 	// 读取配置文件 conf/nps.conf；若失败则使用内置默认配置初始化。
 	//先查找安装路径，然后查找当前目录，然后都没有，就用内置配置
 	confPath := filepath.Join(common.GetRunPath(), "conf", "nps.conf")
@@ -58,11 +60,11 @@ func main() {
 		logs.Warning("load config file error: %s, using built-in default config (struct)", err.Error())
 		// 使用结构体生成内置默认配置，直接构建内存配置，避免文件 IO。
 		cfg := DefaultConfig{
-			AppName:                 "nps",
+			AppName:                 "npx",
 			RunMode:                 "dev",
 			HttpProxyIp:             "0.0.0.0",
-			HttpProxyPort:           80,
-			HttpsProxyPort:          443,
+			HttpProxyPort:           65808,
+			HttpsProxyPort:          65443,
 			HttpsJustProxy:          true,
 			HttpsDefaultCertFile:    "conf/server.pem",
 			HttpsDefaultKeyFile:     "conf/server.key",
@@ -121,8 +123,8 @@ func main() {
 	options := make(service.KeyValue)
 	// 构造系统服务配置（跨平台），用于安装/启动/停止等控制。
 	svcConfig := &service.Config{
-		Name:        "Nps",
-		DisplayName: "nps内网穿透代理服务器",
+		Name:        "Npx",
+		DisplayName: "npx内网穿透代理服务器",
 		Description: "一款轻量级、功能强大的内网穿透代理服务器。支持tcp、udp流量转发，支持内网http代理、内网socks5代理，同时支持snappy压缩、站点保护、加密传输、多路复用、header修改等。支持web图形化管理，集成多用户模式。",
 		Option:      options,
 	}

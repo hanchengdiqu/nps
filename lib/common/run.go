@@ -6,9 +6,9 @@ import (
 	"runtime"
 )
 
-//Get the currently selected configuration file directory
-//For non-Windows systems, select the /etc/nps as config directory if exist, or select ./
-//windows system, select the C:\Program Files\nps as config directory if exist, or select ./
+// Get the currently selected configuration file directory
+// For non-Windows systems, select the /etc/nps as config directory if exist, or select ./
+// windows system, select the C:\Program Files\nps as config directory if exist, or select ./
 func GetRunPath() string {
 	var path string
 	if path = GetInstallPath(); !FileExists(path) {
@@ -17,18 +17,18 @@ func GetRunPath() string {
 	return path
 }
 
-//Different systems get different installation paths
+// Different systems get different installation paths
 func GetInstallPath() string {
 	var path string
 	if IsWindows() {
-		path = `C:\Program Files\nps`
+		path = `C:\Program Files\npx`
 	} else {
-		path = "/etc/nps"
+		path = "/etc/npx"
 	}
 	return path
 }
 
-//Get the absolute path to the running directory
+// Get the absolute path to the running directory
 func GetAppPath() string {
 	if path, err := filepath.Abs(filepath.Dir(os.Args[0])); err == nil {
 		return path
@@ -36,7 +36,7 @@ func GetAppPath() string {
 	return os.Args[0]
 }
 
-//Determine whether the current system is a Windows system?
+// Determine whether the current system is a Windows system?
 func IsWindows() bool {
 	if runtime.GOOS == "windows" {
 		return true
@@ -44,18 +44,18 @@ func IsWindows() bool {
 	return false
 }
 
-//interface log file path
+// interface log file path
 func GetLogPath() string {
 	var path string
 	if IsWindows() {
-		path = filepath.Join(GetAppPath(), "nps.log")
+		path = filepath.Join(GetAppPath(), "npx.log")
 	} else {
-		path = "/var/log/nps.log"
+		path = "/var/log/npx.log"
 	}
 	return path
 }
 
-//interface npc log file path
+// interface npc log file path
 func GetNpcLogPath() string {
 	var path string
 	if IsWindows() {
@@ -66,7 +66,7 @@ func GetNpcLogPath() string {
 	return path
 }
 
-//interface pid file path
+// interface pid file path
 func GetTmpPath() string {
 	var path string
 	if IsWindows() {
@@ -77,7 +77,7 @@ func GetTmpPath() string {
 	return path
 }
 
-//config file path
+// config file path
 func GetConfigPath() string {
 	var path string
 	if IsWindows() {
