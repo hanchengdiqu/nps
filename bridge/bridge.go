@@ -1,7 +1,17 @@
+/*
+Package bridge 实现服务端与客户端之间的“桥接”层。
+
+主要职责：
+- 维护与每个客户端的三条连接：信令(signal)、转发隧道(tunnel)、文件隧道(file)。
+- 校验客户端版本与验签，完成注册/配置下发。
+- 为上层代理模块发送新连接指令，并与对应客户端建立复用连接。
+- 维护客户端健康状态与自动摘除/恢复后端目标。
+- 心跳与清理断开的客户端。
+本文件只包含服务端侧的桥接逻辑，不涉及具体协议转发细节。
+*/
 package bridge
 
 import (
-	"ehang.io/nps-mux"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -11,6 +21,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"ehang.io/nps-mux"
 
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/conn"
@@ -23,14 +35,27 @@ import (
 	"github.com/astaxie/beego/logs"
 )
 
+// Client 表示一个已连接的客户端在服务端侧的三通道聚合对象。
+// - signal: 用于控制面信令（认证、心跳、配置、健康上报等）
+// - tunnel: 用于业务流量转发的复用隧道
+// - file:   专用于文件传输/管理的复用隧道（与业务隧道隔离）
+// - Version: 客户端上报的版本号（仅记录，服务端会在握手时校验）
+// - retryTime: 心跳失败次数计数器；当连续>=3次检查失败则判定客户端离线。
 type Client struct {
-	tunnel    *nps_mux.Mux
-	signal    *conn.Conn
-	file      *nps_mux.Mux
-	Version   string
+	// 业务转发隧道，基于 ehang.io/nps-mux 进行多路复用
+	tunnel *nps_mux.Mux
+	// 控制面信令连接
+	signal *conn.Conn
+	// 文件传输隧道，独立于业务隧道
+	file *nps_mux.Mux
+	// 客户端版本号（由客户端上报）
+	Version string
+	// 心跳重试计数
 	retryTime int // it will be add 1 when ping not ok until to 3 will close the client
 }
 
+// NewClient 创建一个 Client 聚合对象。
+// t: 业务隧道复用器；f: 文件隧道复用器；s: 信令连接；vs: 客户端版本。
 func NewClient(t, f *nps_mux.Mux, s *conn.Conn, vs string) *Client {
 	return &Client{
 		signal:  s,
@@ -40,20 +65,35 @@ func NewClient(t, f *nps_mux.Mux, s *conn.Conn, vs string) *Client {
 	}
 }
 
+// Bridge 是服务端桥接核心对象，负责管理所有客户端的连接与任务。
+// 字段说明：
+// - TunnelPort: 监听的桥接端口（仅用于日志显示，实际端口取自配置）
+// - Client: 当前已注册上线的客户端映射，key 为客户端 ID
+// - Register: 通过 WORK_REGISTER 注册的 IP 白名单，带过期时间
+// - tunnelType: 使用的底层传输类型（"tcp" 或 "kcp"），影响复用与保活
+// - OpenTask/CloseTask: 通知上层开启/关闭某个转发任务的通道
+// - CloseClient: 通知上层某客户端下线
+// - SecretChan: 秘密隧道/内网穿透（secret/p2p）所需的密钥通道
+// - ipVerify: 是否启用来源 IP 验证
+// - runList: 正在运行的任务列表（通过 sync.Map 共享）
+// - disconnectTime: 复用连接的闲置断开时间，传递给 nps-mux
 type Bridge struct {
-	TunnelPort     int //通信隧道端口
+	TunnelPort     int // 通信隧道端口（日志显示）
 	Client         sync.Map
 	Register       sync.Map
-	tunnelType     string //bridge type kcp or tcp
+	tunnelType     string // bridge type kcp or tcp
 	OpenTask       chan *file.Tunnel
 	CloseTask      chan *file.Tunnel
 	CloseClient    chan int
 	SecretChan     chan *conn.Secret
 	ipVerify       bool
-	runList        sync.Map //map[int]interface{}
+	runList        sync.Map // map[int]interface{}
 	disconnectTime int
 }
 
+// NewTunnel 创建 Bridge，并初始化内部通道与参数。
+// tunnelPort: 监听端口；tunnelType: "tcp"/"kcp"；ipVerify: 是否启用 IP 校验；
+// runList: 运行中的任务共享表；disconnectTime: 复用连接闲置断开时间（秒）。
 func NewTunnel(tunnelPort int, tunnelType string, ipVerify bool, runList sync.Map, disconnectTime int) *Bridge {
 	return &Bridge{
 		TunnelPort:     tunnelPort,
@@ -68,6 +108,9 @@ func NewTunnel(tunnelPort int, tunnelType string, ipVerify bool, runList sync.Ma
 	}
 }
 
+// StartTunnel 启动桥接监听并进入接入循环。
+// - 若 tunnelType=="kcp"，则启动 KCP 监听；否则由 connection.GetBridgeListener 返回对应监听器。
+// - 每个新连接都会交由 cliProcess 进行握手验证与类型分流。
 func (s *Bridge) StartTunnel() error {
 	go s.ping()
 	if s.tunnelType == "kcp" {
@@ -89,7 +132,11 @@ func (s *Bridge) StartTunnel() error {
 	return nil
 }
 
-//get health information form client
+// get health information form client
+// GetHealthFromClient 持续读取客户端的健康上报信息，并动态维护后端目标可用性。
+// - 当 status=false 时，表示目标探测失败：从 TargetArr 中移除，并记录到 HealthRemoveArr。
+// - 当 status=true 时，表示目标恢复可用：从 HealthRemoveArr 移除并重新加入 TargetArr。
+// - 该方法在连接终止后会调用 DelClient 进行清理。
 func (s *Bridge) GetHealthFromClient(id int, c *conn.Conn) {
 	for {
 		if info, status, err := c.GetHealthInfo(); err != nil {
@@ -154,15 +201,26 @@ func (s *Bridge) GetHealthFromClient(id int, c *conn.Conn) {
 	s.DelClient(id)
 }
 
-//验证失败，返回错误验证flag，并且关闭连接
+// 验证失败，返回错误验证flag，并且关闭连接
 func (s *Bridge) verifyError(c *conn.Conn) {
 	c.Write([]byte(common.VERIFY_EER))
 }
 
+// verifySuccess 验证通过后向客户端写入成功标识。
 func (s *Bridge) verifySuccess(c *conn.Conn) {
 	c.Write([]byte(common.VERIFY_SUCCESS))
 }
 
+// cliProcess 处理一条新的原始连接：
+// 1) 读取探测标识与版本，校验客户端与服务端版本一致性；
+// 2) 完成验签（VerifyKey），根据客户端类型旗标分流到不同处理：
+//   - WORK_MAIN: 建立信令连接；
+//   - WORK_CHAN: 建立业务隧道复用连接；
+//   - WORK_CONFIG: 进入配置通道，接收/下发配置；
+//   - WORK_REGISTER: 记录 IP 验证信息；
+//   - WORK_SECRET: secret 通道；
+//   - WORK_FILE: 建立文件传输复用连接；
+//   - WORK_P2P: P2P 握手与信息转发。
 func (s *Bridge) cliProcess(c *conn.Conn) {
 	//read test flag
 	if _, err := c.GetShortContent(3); err != nil {
@@ -209,6 +267,8 @@ func (s *Bridge) cliProcess(c *conn.Conn) {
 	return
 }
 
+// DelClient 将指定客户端从连接表中移除，并关闭信令连接；
+// 如果该客户端不是公用客户端，还会推送 CloseClient 事件供上层清理任务。
 func (s *Bridge) DelClient(id int) {
 	if v, ok := s.Client.Load(id); ok {
 		if v.(*Client).signal != nil {
@@ -224,7 +284,16 @@ func (s *Bridge) DelClient(id int) {
 	}
 }
 
-//use different
+// use different
+// typeDeal 根据客户端上报的工作类型（flag）决定后续处理方式。
+// 各分支说明：
+// - WORK_MAIN: 建立/更新信令连接，并启动健康信息读取；
+// - WORK_CHAN: 建立业务隧道复用连接；
+// - WORK_CONFIG: 进入配置模式，允许新建客户端/任务/Host 等；
+// - WORK_REGISTER: 记录来源 IP 的白名单有效时间；
+// - WORK_SECRET: 接收 secret 密钥并转发到 SecretChan；
+// - WORK_FILE: 建立文件传输复用连接；
+// - WORK_P2P: 处理 P2P 握手，向对应客户端与请求方下发必要信息。
 func (s *Bridge) typeDeal(typeVal string, c *conn.Conn, id int, vs string) {
 	isPub := file.GetDb().IsPubClient(id)
 	switch typeVal {
@@ -303,7 +372,9 @@ func (s *Bridge) typeDeal(typeVal string, c *conn.Conn, id int, vs string) {
 	return
 }
 
-//register ip
+// register ip
+// register 记录客户端来源 IP 的白名单有效期（小时）。
+// 客户端通过 WORK_REGISTER 发送一个 int32 的小时数，服务端据此计算过期时间。
 func (s *Bridge) register(c *conn.Conn) {
 	var hour int32
 	if err := binary.Read(c, binary.LittleEndian, &hour); err == nil {
@@ -311,6 +382,11 @@ func (s *Bridge) register(c *conn.Conn) {
 	}
 }
 
+// SendLinkInfo 为上层代理模块建立到客户端侧的目标连接：
+// - 若 link.LocalProxy=true，直接在本地拨号到 link.Host；
+// - 否则通过对应客户端的复用隧道建立一条新连接，并发送 Link 元信息；
+// - 当 t.Mode=="file" 时，禁用加密与压缩，以优化文件传输；
+// - 如启用了 IP 白名单验证，将校验请求来源的 RemoteAddr 是否在有效期内。
 func (s *Bridge) SendLinkInfo(clientId int, link *conn.Link, t *file.Tunnel) (target net.Conn, err error) {
 	//if the proxy type is local
 	if link.LocalProxy {
@@ -358,6 +434,10 @@ func (s *Bridge) SendLinkInfo(clientId int, link *conn.Link, t *file.Tunnel) (ta
 	return
 }
 
+// ping 定时巡检所有客户端连接状态：
+// - 若缺失必要通道（signal/tunnel），连续 3 次检查失败后判定离线；
+// - 若发现多路复用隧道已关闭，也会触发下线；
+// - 下线时将调用 DelClient 进行统一清理。
 func (s *Bridge) ping() {
 	ticker := time.NewTicker(time.Second * 5)
 	defer ticker.Stop()
@@ -387,7 +467,13 @@ func (s *Bridge) ping() {
 	}
 }
 
-//get config and add task from client config
+// get config and add task from client config
+// getConfig 处理来自客户端的配置交互：
+// - WORK_STATUS: 返回该客户端当前运行的 Host/Task 备注列表；
+// - NEW_CONF: 新建客户端配置并返回 VerifyKey；
+// - NEW_HOST: 新增或复用一个 Host；
+// - NEW_TASK: 新增一组/多个转发任务，并根据模式校验端口与目标对应关系。
+// 在处理过程中如遇失败，将向客户端返回失败标记并中断；必要时会触发 DelClient。
 func (s *Bridge) getConfig(c *conn.Conn, isPub bool, client *file.Client) {
 	var fail bool
 loop:
