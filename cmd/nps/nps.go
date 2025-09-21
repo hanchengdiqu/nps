@@ -9,11 +9,11 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -39,6 +39,94 @@ var (
 	ver   = flag.Bool("version", false, "show current version")
 )
 
+// 内置默认配置（当 conf/nps.conf 加载失败时使用）。
+const defaultConfigINI = `appname = nps
+#Boot mode(dev|pro)
+runmode = dev
+
+#HTTP(S) proxy port, no startup if empty
+http_proxy_ip=0.0.0.0
+http_proxy_port=80
+https_proxy_port=443
+https_just_proxy=true
+#default https certificate setting
+https_default_cert_file=conf/server.pem
+https_default_key_file=conf/server.key
+
+##bridge
+bridge_type=tcp
+bridge_port=8024
+bridge_ip=0.0.0.0
+
+# Public password, which clients can use to connect to the server
+# After the connection, the server will be able to open relevant ports and parse related domain names according to its own configuration file.
+public_vkey=123
+
+#Traffic data persistence interval(minute)
+#Ignorance means no persistence
+#flow_store_interval=1
+
+# log level LevelEmergency->0  LevelAlert->1 LevelCritical->2 LevelError->3 LevelWarning->4 LevelNotice->5 LevelInformational->6 LevelDebug->7
+log_level=7
+#log_path=nps.log
+
+#Whether to restrict IP access, true or false or ignore
+#ip_limit=true
+
+#p2p
+#p2p_ip=127.0.0.1
+#p2p_port=6000
+
+#web
+web_host=a.o.com
+web_username=admin
+web_password=123
+web_port = 8080
+web_ip=0.0.0.0
+web_base_url=
+web_open_ssl=false
+web_cert_file=conf/server.pem
+web_key_file=conf/server.key
+# if web under proxy use sub path. like http://host/nps need this.
+#web_base_url=/nps
+
+#Web API unauthenticated IP address(the len of auth_crypt_key must be 16)
+#Remove comments if needed
+#auth_key=test
+auth_crypt_key =1234567812345678
+
+#allow_ports=9001-9009,10001,11000-12000
+
+#Web management multi-user login
+allow_user_login=false
+allow_user_register=false
+allow_user_change_username=false
+
+
+#extension
+allow_flow_limit=false
+allow_rate_limit=false
+allow_tunnel_num_limit=false
+allow_local_proxy=false
+allow_connection_num_limit=false
+allow_multi_ip=false
+system_info_display=false
+
+#cache
+http_cache=false
+http_cache_length=100
+
+#get origin ip
+http_add_origin_header=false
+
+#pprof debug options
+#pprof_ip=0.0.0.0
+#pprof_port=9999
+
+#client disconnect timeout
+disconnect_timeout=60
+`
+
 // main 为程序入口：
 // - 解析命令行参数（如 -version）；
 // - 读取 nps.conf 配置并初始化日志；
@@ -51,9 +139,53 @@ func main() {
 		common.PrintVersion()
 		return
 	}
-	// 读取配置文件 conf/nps.conf；若失败则直接退出。
-	if err := beego.LoadAppConfig("ini", filepath.Join(common.GetRunPath(), "conf", "nps.conf")); err != nil {
-		log.Fatalln("load config file error", err.Error())
+	// 读取配置文件 conf/nps.conf；若失败则使用内置默认配置初始化。
+	confPath := filepath.Join(common.GetRunPath(), "conf", "nps.conf")
+	if err := beego.LoadAppConfig("ini", confPath); err != nil {
+		logs.Warning("load config file error: %s, using built-in default config (struct)", err.Error())
+		// 使用结构体生成内置默认配置，直接构建内存配置，避免文件 IO。
+		cfg := DefaultConfig{
+			AppName:                 "nps",
+			RunMode:                 "dev",
+			HttpProxyIp:             "0.0.0.0",
+			HttpProxyPort:           80,
+			HttpsProxyPort:          443,
+			HttpsJustProxy:          true,
+			HttpsDefaultCertFile:    "conf/server.pem",
+			HttpsDefaultKeyFile:     "conf/server.key",
+			BridgeType:              "tcp",
+			BridgePort:              65203,
+			BridgeIp:                "0.0.0.0",
+			PublicVKey:              "123@163.com",
+			LogLevel:                7,
+			LogPath:                 "",
+			WebHost:                 "a.o.com",
+			WebUsername:             "admin",
+			WebPassword:             "1234567890123abc@163.com",
+			WebPort:                 65202,
+			WebIp:                   "0.0.0.0",
+			WebBaseURL:              "",
+			WebOpenSSL:              false,
+			WebCertFile:             "conf/server.pem",
+			WebKeyFile:              "conf/server.key",
+			AuthCryptKey:            "1234567812345678",
+			AllowUserLogin:          false,
+			AllowUserRegister:       false,
+			AllowUserChangeUsername: false,
+			AllowFlowLimit:          false,
+			AllowRateLimit:          false,
+			AllowTunnelNumLimit:     false,
+			AllowLocalProxy:         false,
+			AllowConnectionNumLimit: false,
+			AllowMultiIP:            false,
+			SystemInfoDisplay:       false,
+			HttpCache:               false,
+			HttpCacheLength:         100,
+			HttpAddOriginHeader:     false,
+			DisconnectTimeout:       60,
+		}
+		// 将默认配置直接写入全局 beego.AppConfig，不进行文件读写。
+		cfg.ApplyToAppConfig()
 	}
 	common.InitPProfFromFile()
 	if level = beego.AppConfig.String("log_level"); level == "" {
@@ -259,4 +391,106 @@ func run() {
 		timeout = 60
 	}
 	go server.StartNewServer(bridgePort, task, beego.AppConfig.String("bridge_type"), timeout)
+}
+
+// DefaultConfig 作为“类”承载默认配置，不依赖任何文件。
+type DefaultConfig struct {
+	AppName              string
+	RunMode              string
+	HttpProxyIp          string
+	HttpProxyPort        int
+	HttpsProxyPort       int
+	HttpsJustProxy       bool
+	HttpsDefaultCertFile string
+	HttpsDefaultKeyFile  string
+
+	BridgeType string
+	BridgePort int
+	BridgeIp   string
+
+	PublicVKey string
+
+	LogLevel int
+	LogPath  string
+
+	WebHost     string
+	WebUsername string
+	WebPassword string
+	WebPort     int
+	WebIp       string
+	WebBaseURL  string
+	WebOpenSSL  bool
+	WebCertFile string
+	WebKeyFile  string
+
+	AuthCryptKey string
+
+	AllowUserLogin          bool
+	AllowUserRegister       bool
+	AllowUserChangeUsername bool
+	AllowFlowLimit          bool
+	AllowRateLimit          bool
+	AllowTunnelNumLimit     bool
+	AllowLocalProxy         bool
+	AllowConnectionNumLimit bool
+	AllowMultiIP            bool
+	SystemInfoDisplay       bool
+	HttpCache               bool
+	HttpCacheLength         int
+	HttpAddOriginHeader     bool
+	DisconnectTimeout       int
+}
+
+// ApplyToAppConfig 将默认配置直接写入 beego.AppConfig。
+func (c DefaultConfig) ApplyToAppConfig() {
+	_ = beego.AppConfig.Set("appname", c.AppName)
+	_ = beego.AppConfig.Set("runmode", c.RunMode)
+
+	_ = beego.AppConfig.Set("http_proxy_ip", c.HttpProxyIp)
+	_ = beego.AppConfig.Set("http_proxy_port", strconv.Itoa(c.HttpProxyPort))
+	_ = beego.AppConfig.Set("https_proxy_port", strconv.Itoa(c.HttpsProxyPort))
+	_ = beego.AppConfig.Set("https_just_proxy", strconv.FormatBool(c.HttpsJustProxy))
+	_ = beego.AppConfig.Set("https_default_cert_file", c.HttpsDefaultCertFile)
+	_ = beego.AppConfig.Set("https_default_key_file", c.HttpsDefaultKeyFile)
+
+	_ = beego.AppConfig.Set("bridge_type", c.BridgeType)
+	_ = beego.AppConfig.Set("bridge_port", strconv.Itoa(c.BridgePort))
+	_ = beego.AppConfig.Set("bridge_ip", c.BridgeIp)
+
+	_ = beego.AppConfig.Set("public_vkey", c.PublicVKey)
+
+	_ = beego.AppConfig.Set("log_level", strconv.Itoa(c.LogLevel))
+	if c.LogPath != "" {
+		_ = beego.AppConfig.Set("log_path", c.LogPath)
+	}
+
+	_ = beego.AppConfig.Set("web_host", c.WebHost)
+	_ = beego.AppConfig.Set("web_username", c.WebUsername)
+	_ = beego.AppConfig.Set("web_password", c.WebPassword)
+	_ = beego.AppConfig.Set("web_port", strconv.Itoa(c.WebPort))
+	_ = beego.AppConfig.Set("web_ip", c.WebIp)
+	_ = beego.AppConfig.Set("web_base_url", c.WebBaseURL)
+	_ = beego.AppConfig.Set("web_open_ssl", strconv.FormatBool(c.WebOpenSSL))
+	_ = beego.AppConfig.Set("web_cert_file", c.WebCertFile)
+	_ = beego.AppConfig.Set("web_key_file", c.WebKeyFile)
+
+	_ = beego.AppConfig.Set("auth_crypt_key", c.AuthCryptKey)
+
+	_ = beego.AppConfig.Set("allow_user_login", strconv.FormatBool(c.AllowUserLogin))
+	_ = beego.AppConfig.Set("allow_user_register", strconv.FormatBool(c.AllowUserRegister))
+	_ = beego.AppConfig.Set("allow_user_change_username", strconv.FormatBool(c.AllowUserChangeUsername))
+
+	_ = beego.AppConfig.Set("allow_flow_limit", strconv.FormatBool(c.AllowFlowLimit))
+	_ = beego.AppConfig.Set("allow_rate_limit", strconv.FormatBool(c.AllowRateLimit))
+	_ = beego.AppConfig.Set("allow_tunnel_num_limit", strconv.FormatBool(c.AllowTunnelNumLimit))
+	_ = beego.AppConfig.Set("allow_local_proxy", strconv.FormatBool(c.AllowLocalProxy))
+	_ = beego.AppConfig.Set("allow_connection_num_limit", strconv.FormatBool(c.AllowConnectionNumLimit))
+	_ = beego.AppConfig.Set("allow_multi_ip", strconv.FormatBool(c.AllowMultiIP))
+	_ = beego.AppConfig.Set("system_info_display", strconv.FormatBool(c.SystemInfoDisplay))
+
+	_ = beego.AppConfig.Set("http_cache", strconv.FormatBool(c.HttpCache))
+	_ = beego.AppConfig.Set("http_cache_length", strconv.Itoa(c.HttpCacheLength))
+	_ = beego.AppConfig.Set("http_add_origin_header", strconv.FormatBool(c.HttpAddOriginHeader))
+
+	_ = beego.AppConfig.Set("disconnect_timeout", strconv.Itoa(c.DisconnectTimeout))
 }
