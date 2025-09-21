@@ -38,6 +38,17 @@ type Config struct {
 	LocalServer  []*LocalServer
 }
 
+// NewConfig 读取并解析配置文件
+// 从给定路径加载配置内容，去除注释与空白，提取所有段标题，
+// 按段落分别解析为 CommonConfig、Hosts、Tasks、Healths 以及 LocalServer（secret/p2p，无 mode）等结构。
+// 支持以下段落与键：
+// - [common]：server_addr、vkey、conn_type、auto_reconnection、basic_username、basic_password、
+//   web_username、web_password、compress、crypt、proxy_url、rate_limit、flow_limit、max_conn、
+//   remark、pprof_addr、disconnect_timeout 等
+// - 其他段：如果包含 host 相关键解析为 Host，反之解析为 Tunnel
+// - [secret*]/[p2p*] 且无 mode：解析为本地服务 LocalServer
+// - [health*]：解析为健康检查配置
+// 返回解析完成的 Config 结构体与错误信息
 func NewConfig(path string) (c *Config, err error) {
 	c = new(Config)
 	var b []byte
@@ -99,11 +110,18 @@ func NewConfig(path string) (c *Config, err error) {
 	return
 }
 
+// getTitleContent 去除方括号后的段名
+// 输入类似 "[common]" 或 "[section-x]" 的标题字符串，返回去掉前后方括号后的纯标题。
+// 例如："[common]" -> "common"
 func getTitleContent(s string) string {
 	re, _ := regexp.Compile(`[\[\]]`)
 	return re.ReplaceAllString(s, "")
 }
 
+// dealCommon 解析 [common] 段
+// 将分行的 key=value 文本转换为 CommonConfig，并填充嵌套的 file.Client 参数。
+// 会将字符串转换为布尔值/整数等类型；支持 pprof 初始化与断连超时设置。
+// 未识别或缺失的键保持零值。
 func dealCommon(s string) *CommonConfig {
 	c := &CommonConfig{}
 	c.Client = file.NewClient("", true, true)
@@ -155,6 +173,10 @@ func dealCommon(s string) *CommonConfig {
 	return c
 }
 
+// dealHost 解析 Host 段
+// 根据 host、target_addr、host_change、scheme、location 及 header_ 前缀键构造 *file.Host。
+// target_addr 支持逗号分隔，自动转换为换行分隔。
+// header_* 键会被聚合到 HeaderChange（形如 key:value 的多行字符串）。
 func dealHost(s string) *file.Host {
 	h := &file.Host{}
 	h.Target = new(file.Target)
@@ -188,6 +210,9 @@ func dealHost(s string) *file.Host {
 	return h
 }
 
+// dealHealth 解析健康检查段
+// 支持键：health_check_timeout、health_check_max_failed、health_check_interval、
+// health_http_url、health_check_type、health_check_target。
 func dealHealth(s string) *file.Health {
 	h := &file.Health{}
 	for _, v := range splitStr(s) {
@@ -215,6 +240,9 @@ func dealHealth(s string) *file.Health {
 	return h
 }
 
+// dealTunnel 解析隧道段
+// 根据 server_port/server_ip/mode/target_addr/target_port/target_ip/password/local_path/strip_pre 等键
+// 构造 *file.Tunnel。若设置 multi_account 为文件路径，将读取并解析为多账号映射。
 func dealTunnel(s string) *file.Tunnel {
 	t := &file.Tunnel{}
 	t.Target = new(file.Target)
@@ -263,6 +291,9 @@ func dealTunnel(s string) *file.Tunnel {
 
 }
 
+// dealMultiUser 解析多账户映射
+// 将多行的 key=value 格式内容解析为账号映射 map[user]password。
+// 空值键会被保留为对应的空字符串。
 func dealMultiUser(s string) map[string]string {
 	multiUserMap := make(map[string]string)
 	for _, v := range splitStr(s) {
@@ -277,6 +308,8 @@ func dealMultiUser(s string) map[string]string {
 	return multiUserMap
 }
 
+// delLocalService 解析本地服务（secret/p2p，无 mode）
+// 支持键：local_port、local_ip、password、target_addr。
 func delLocalService(s string) *LocalServer {
 	l := new(LocalServer)
 	for _, v := range splitStr(s) {
@@ -300,6 +333,9 @@ func delLocalService(s string) *LocalServer {
 	return l
 }
 
+// getAllTitle 提取所有段标题并校验唯一性
+// 使用正则按行匹配形如 [title] 的段名，保持出现顺序返回。
+// 若存在重复段名，返回错误。
 func getAllTitle(content string) (arr []string, err error) {
 	var re *regexp.Regexp
 	re, err = regexp.Compile(`(?m)^\[[^\[\]\r\n]+\]`)
@@ -318,6 +354,9 @@ func getAllTitle(content string) (arr []string, err error) {
 	return
 }
 
+// splitStr 将配置片段按行拆分
+// 在 Windows 上优先使用 \r\n 拆分；若结果行数过少（<3）则回退为按 \n 拆分。
+// 返回拆分得到的每一行（保持顺序）。
 func splitStr(s string) (configDataArr []string) {
 	if common.IsWindows() {
 		configDataArr = strings.Split(s, "\r\n")
