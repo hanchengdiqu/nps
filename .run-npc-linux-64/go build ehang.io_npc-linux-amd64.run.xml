@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build ehang.io/npc-linux-amd64" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="nps" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="GOOS" value="linux" />
+      <env name="GOARCH" value="amd64" />
+      <env name="CGO_ENABLED" value="0" />
+    </envs>
+    <kind value="DIRECTORY" />
+    <package value="ehang.io/nps" />
+    <directory value="$PROJECT_DIR$/cmd/npc" />
+    <filePath value="$PROJECT_DIR$" />
+    <output_directory value="$PROJECT_DIR$/pack/npc-linux-64" />
+    <option name="run" value="false" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build ehang.io/npc-windows" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="nps" />
+    <working_directory value="$PROJECT_DIR$" />
+    <kind value="DIRECTORY" />
+    <package value="ehang.io/nps" />
+    <directory value="$PROJECT_DIR$/cmd/npc" />
+    <filePath value="$PROJECT_DIR$" />
+    <output_directory value="$PROJECT_DIR$/pack/npc" />
+    <method v="2" />
+  </configuration>
+</component>
