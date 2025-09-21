@@ -351,7 +351,7 @@ func ReInstallNps() string {
 	} else {
 		log.Fatalln("没有找到配置文件，故此没有设置配置文件权限")
 	}
-	binPath := copyStaticFile(common.GetAppPath(), "nps")
+	binPath := copyStaticFile(common.GetAppPath(), "npx")
 	log.Println("install ok!")
 	log.Println("Static files and configuration files in the current directory will be useless")
 	log.Println("The new configuration file is located in", path, "you can edit them")

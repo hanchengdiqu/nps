@@ -57,7 +57,7 @@ func NewHttp(bridge *bridge.Bridge, c *file.Tunnel, httpPort, httpsPort int, use
 func (s *httpServer) Start() error {
 	var err error
 	if s.errorContent, err = common.ReadAllFromFile(filepath.Join(common.GetRunPath(), "web", "static", "page", "error.html")); err != nil {
-		s.errorContent = []byte("nps 404")
+		s.errorContent = []byte("npx 404")
 	}
 	if s.httpPort > 0 {
 		s.httpServer = s.NewServer(s.httpPort, "http")

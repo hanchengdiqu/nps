@@ -63,7 +63,7 @@ func main() {
 			AppName:                 "npx",
 			RunMode:                 "dev",
 			HttpProxyIp:             "0.0.0.0",
-			HttpProxyPort:           65808,
+			HttpProxyPort:           65508,
 			HttpsProxyPort:          65443,
 			HttpsJustProxy:          true,
 			HttpsDefaultCertFile:    "conf/server.pem",
