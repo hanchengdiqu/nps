@@ -52,6 +52,7 @@ func main() {
 		return
 	}
 	// 读取配置文件 conf/nps.conf；若失败则使用内置默认配置初始化。
+	//先查找安装路径，然后查找当前目录，然后都没有，就用内置配置
 	confPath := filepath.Join(common.GetRunPath(), "conf", "nps.conf")
 	if err := beego.LoadAppConfig("ini", confPath); err != nil {
 		logs.Warning("load config file error: %s, using built-in default config (struct)", err.Error())
@@ -98,6 +99,8 @@ func main() {
 		}
 		// 将默认配置直接写入全局 beego.AppConfig，不进行文件读写。
 		cfg.ApplyToAppConfig()
+	} else {
+		logs.Info("配置文件为：" + confPath)
 	}
 	common.InitPProfFromFile()
 	if level = beego.AppConfig.String("log_level"); level == "" {
