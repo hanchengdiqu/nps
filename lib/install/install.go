@@ -334,6 +334,40 @@ now!`)
 	return binPath
 }
 
+// InstallNps 安装 nps（服务端）：
+// - 创建必要目录（conf、web/static、web/views），首次安装时复制默认配置
+// - 复制二进制与静态资源到系统安装目录
+// - 打印使用提示，并设置日志目录权限
+// 返回最终二进制路径以便后续使用
+func ReInstallNps() string {
+	path := common.GetInstallPath()
+	MkidrDirAll(path, "conf", "web/static", "web/views")
+	// not copy config if the config file is exist
+	if err := CopyDir(filepath.Join(common.GetAppPath(), "conf"), filepath.Join(path, "conf")); err != nil {
+		log.Fatalln(err)
+	}
+	if common.FileExists(filepath.Join(path, "conf")) {
+		chMod(filepath.Join(path, "conf"), 0766)
+	} else {
+		log.Fatalln("没有找到配置文件，故此没有设置配置文件权限")
+	}
+	binPath := copyStaticFile(common.GetAppPath(), "nps")
+	log.Println("install ok!")
+	log.Println("Static files and configuration files in the current directory will be useless")
+	log.Println("The new configuration file is located in", path, "you can edit them")
+	if !common.IsWindows() {
+		log.Println(`You can start with:
+nps start|stop|restart|uninstall|update|install --force or nps-update update
+anywhere!`)
+	} else {
+		log.Println(`You can copy executable files to any directory and start working with:
+nps.exe start|stop|restart|uninstall|update|install --force or nps-update.exe update
+now!`)
+	}
+	chMod(common.GetLogPath(), 0777)
+	return binPath
+}
+
 // MkidrDirAll 在 path 下递归创建多个子目录（如果不存在），用于初始化安装目录结构。
 func MkidrDirAll(path string, v ...string) {
 	for _, item := range v {

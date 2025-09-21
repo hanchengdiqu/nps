@@ -168,7 +168,16 @@ func main() {
 			_ = service.Control(s, "stop")
 			_ = service.Control(s, "uninstall")
 
-			binPath := install.InstallNps()
+			var binPath string
+			// 判断是否使用 --force 参数强制重新安装
+			if len(os.Args) > 2 && os.Args[2] == "--force" {
+				// 强制重新安装 NPS 服务端二进制文件
+				binPath = install.ReInstallNps()
+			} else {
+				// 安装 NPS 服务端二进制文件
+				binPath = install.InstallNps()
+			}
+
 			svcConfig.Executable = binPath
 			s, err := service.New(prg, svcConfig)
 			if err != nil {
