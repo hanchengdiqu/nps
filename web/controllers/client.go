@@ -21,6 +21,12 @@ type ClientController struct {
 // GET请求：显示客户端列表页面
 // POST请求：返回客户端列表的Ajax数据，支持分页、搜索、排序
 // 同时返回服务器连接信息（IP、桥接类型、端口等）供客户端连接使用
+//
+// POST请求参数：
+// - search: 搜索关键词，用于模糊搜索客户端信息
+// - order: 排序方式，asc为正序，desc为倒序
+// - offset: 分页偏移量，表示第几页
+// - limit: 每页显示的条数，用于分页显示
 func (s *ClientController) List() {
 	if s.Ctx.Request.Method == "GET" {
 		// GET请求：显示客户端列表页面
@@ -59,6 +65,21 @@ func (s *ClientController) List() {
 // Add 添加客户端
 // GET请求：显示添加客户端的表单页面
 // POST请求：处理添加客户端的表单提交，创建新的客户端配置
+//
+// POST请求参数：
+// - remark: 客户端备注信息
+// - u: basic权限认证用户名
+// - p: basic权限认证密码
+// - vkey: 客户端验证密钥，用于客户端连接验证
+// - config_conn_allow: 是否允许客户端以配置文件模式连接，1允许，0不允许
+// - compress: 是否启用压缩，1允许，0不允许
+// - crypt: 是否启用加密，1允许，0不允许
+// - rate_limit: 带宽限制，单位KB/S，空则为不限制
+// - flow_limit: 流量限制，单位M，空则为不限制
+// - max_conn: 客户端最大连接数量，空则为不限制
+// - max_tunnel: 客户端最大隧道数量，空则为不限制
+// - web_username: Web登录用户名
+// - web_password: Web登录密码
 func (s *ClientController) Add() {
 	if s.Ctx.Request.Method == "GET" {
 		// GET请求：显示添加客户端表单页面
@@ -102,6 +123,9 @@ func (s *ClientController) Add() {
 // GetClient 获取单个客户端信息
 // POST请求：根据客户端ID获取客户端详细信息，用于编辑表单的数据回显
 // 返回JSON格式的客户端数据
+//
+// POST请求参数：
+// - id: 客户端ID，用于指定要获取信息的客户端
 func (s *ClientController) GetClient() {
 	if s.Ctx.Request.Method == "POST" {
 		id := s.GetIntNoErr("id") // 获取客户端ID
@@ -125,6 +149,22 @@ func (s *ClientController) GetClient() {
 // GET请求：显示编辑客户端的表单页面，预填充现有数据
 // POST请求：处理编辑客户端的表单提交，更新客户端配置
 // 包含权限验证、用户名重复检查、验证密钥重复检查等安全机制
+//
+// POST请求参数：
+// - id: 要修改的客户端ID
+// - remark: 客户端备注信息
+// - u: basic权限认证用户名
+// - p: basic权限认证密码
+// - vkey: 客户端验证密钥，用于客户端连接验证
+// - config_conn_allow: 是否允许客户端以配置文件模式连接，1允许，0不允许
+// - compress: 是否启用压缩，1允许，0不允许
+// - crypt: 是否启用加密，1允许，0不允许
+// - rate_limit: 带宽限制，单位KB/S，空则为不限制
+// - flow_limit: 流量限制，单位M，空则为不限制
+// - max_conn: 客户端最大连接数量，空则为不限制
+// - max_tunnel: 客户端最大隧道数量，空则为不限制
+// - web_username: Web登录用户名
+// - web_password: Web登录密码
 func (s *ClientController) Edit() {
 	id := s.GetIntNoErr("id") // 获取要编辑的客户端ID
 	
@@ -206,6 +246,10 @@ func (s *ClientController) Edit() {
 
 // ChangeStatus 更改客户端状态
 // 用于启用或禁用客户端，当禁用客户端时会断开其所有连接
+//
+// POST请求参数：
+// - id: 客户端ID，指定要更改状态的客户端
+// - status: 客户端状态，true为启用，false为禁用
 func (s *ClientController) ChangeStatus() {
 	id := s.GetIntNoErr("id") // 获取客户端ID
 	
@@ -225,6 +269,9 @@ func (s *ClientController) ChangeStatus() {
 // Del 删除客户端
 // 删除客户端及其相关的所有隧道、主机配置和连接
 // 这是一个彻底的清理操作，会移除客户端的所有相关数据
+//
+// POST请求参数：
+// - id: 要删除的客户端ID
 func (s *ClientController) Del() {
 	id := s.GetIntNoErr("id") // 获取要删除的客户端ID
 	
