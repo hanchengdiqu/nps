@@ -1,3 +1,5 @@
+// Package controllers 提供NPS（内网穿透服务）Web管理界面的控制器实现
+// 本文件包含主要的隧道管理和主机管理功能的HTTP处理器
 package controllers
 
 import (
@@ -8,67 +10,105 @@ import (
 	"github.com/astaxie/beego"
 )
 
+// IndexController 主控制器，负责处理NPS系统的核心功能
+// 包括隧道管理（TCP、UDP、HTTP代理、SOCKS5等）和主机管理
 type IndexController struct {
 	BaseController
 }
 
+// Index 显示系统仪表板页面
+// 获取系统运行状态数据并渲染主页面
+// URL: GET /
 func (s *IndexController) Index() {
 	s.Data["web_base_url"] = beego.AppConfig.String("web_base_url")
 	s.Data["data"] = server.GetDashboardData()
 	s.SetInfo("dashboard")
 	s.display("index/index")
 }
+
+// Help 显示帮助页面
+// 提供系统使用说明和相关文档
+// URL: GET /index/help
 func (s *IndexController) Help() {
 	s.SetInfo("about")
 	s.display("index/help")
 }
 
+// Tcp 显示TCP隧道管理页面
+// 列出所有TCP类型的隧道配置
+// URL: GET /index/tcp
 func (s *IndexController) Tcp() {
 	s.SetInfo("tcp")
 	s.SetType("tcp")
 	s.display("index/list")
 }
 
+// Udp 显示UDP隧道管理页面
+// 列出所有UDP类型的隧道配置
+// URL: GET /index/udp
 func (s *IndexController) Udp() {
 	s.SetInfo("udp")
 	s.SetType("udp")
 	s.display("index/list")
 }
 
+// Socks5 显示SOCKS5代理管理页面
+// 列出所有SOCKS5类型的代理配置
+// URL: GET /index/socks5
 func (s *IndexController) Socks5() {
 	s.SetInfo("socks5")
 	s.SetType("socks5")
 	s.display("index/list")
 }
 
+// Http 显示HTTP代理管理页面
+// 列出所有HTTP代理类型的隧道配置
+// URL: GET /index/http
 func (s *IndexController) Http() {
 	s.SetInfo("http proxy")
 	s.SetType("httpProxy")
 	s.display("index/list")
 }
+
+// File 显示文件服务器管理页面
+// 列出所有文件服务器类型的隧道配置
+// URL: GET /index/file
 func (s *IndexController) File() {
 	s.SetInfo("file server")
 	s.SetType("file")
 	s.display("index/list")
 }
 
+// Secret 显示加密隧道管理页面
+// 列出所有加密类型的隧道配置
+// URL: GET /index/secret
 func (s *IndexController) Secret() {
 	s.SetInfo("secret")
 	s.SetType("secret")
 	s.display("index/list")
 }
+
+// P2p 显示P2P连接管理页面
+// 列出所有点对点连接类型的隧道配置
+// URL: GET /index/p2p
 func (s *IndexController) P2p() {
 	s.SetInfo("p2p")
 	s.SetType("p2p")
 	s.display("index/list")
 }
 
+// Host 显示主机服务器管理页面
+// 列出所有主机服务器类型的配置
+// URL: GET /index/host
 func (s *IndexController) Host() {
 	s.SetInfo("host")
 	s.SetType("hostServer")
 	s.display("index/list")
 }
 
+// All 显示指定客户端的所有隧道
+// 根据客户端ID显示该客户端下的所有隧道配置
+// URL: GET /index/all?client_id=xxx
 func (s *IndexController) All() {
 	s.Data["menu"] = "client"
 	clientId := s.getEscapeString("client_id")
@@ -77,6 +117,10 @@ func (s *IndexController) All() {
 	s.display("index/list")
 }
 
+// GetTunnel 获取隧道列表数据（AJAX接口）
+// 支持分页、按类型筛选、按客户端筛选和搜索功能
+// 返回JSON格式的隧道列表数据供前端表格显示
+// URL: POST /index/gettunnel
 func (s *IndexController) GetTunnel() {
 	start, length := s.GetAjaxParams()
 	taskType := s.getEscapeString("type")
@@ -85,6 +129,10 @@ func (s *IndexController) GetTunnel() {
 	s.AjaxTable(list, cnt, cnt, nil)
 }
 
+// Add 添加新隧道
+// GET请求：显示添加隧道的表单页面
+// POST请求：处理隧道创建逻辑，包括端口检测、客户端验证、隧道数量限制等
+// URL: GET/POST /index/add
 func (s *IndexController) Add() {
 	if s.Ctx.Request.Method == "GET" {
 		s.Data["type"] = s.getEscapeString("type")
@@ -125,6 +173,11 @@ func (s *IndexController) Add() {
 		}
 	}
 }
+
+// GetOneTunnel 获取单个隧道详情（AJAX接口）
+// 根据隧道ID返回隧道的详细配置信息
+// 返回JSON格式数据，包含状态码和隧道数据
+// URL: POST /index/getonetunnel?id=xxx
 func (s *IndexController) GetOneTunnel() {
 	id := s.GetIntNoErr("id")
 	data := make(map[string]interface{})
@@ -137,6 +190,11 @@ func (s *IndexController) GetOneTunnel() {
 	s.Data["json"] = data
 	s.ServeJSON()
 }
+
+// Edit 编辑隧道配置
+// GET请求：显示编辑隧道的表单页面，预填充现有配置
+// POST请求：处理隧道更新逻辑，包括端口变更检测、配置更新、服务重启等
+// URL: GET/POST /index/edit?id=xxx
 func (s *IndexController) Edit() {
 	id := s.GetIntNoErr("id")
 	if s.Ctx.Request.Method == "GET" {
@@ -181,6 +239,9 @@ func (s *IndexController) Edit() {
 	}
 }
 
+// Stop 停止指定隧道服务
+// 根据隧道ID停止对应的隧道服务，但保留配置信息
+// URL: POST /index/stop?id=xxx
 func (s *IndexController) Stop() {
 	id := s.GetIntNoErr("id")
 	if err := server.StopServer(id); err != nil {
@@ -189,6 +250,9 @@ func (s *IndexController) Stop() {
 	s.AjaxOk("stop success")
 }
 
+// Del 删除指定隧道
+// 根据隧道ID彻底删除隧道配置和服务
+// URL: POST /index/del?id=xxx
 func (s *IndexController) Del() {
 	id := s.GetIntNoErr("id")
 	if err := server.DelTask(id); err != nil {
@@ -197,6 +261,9 @@ func (s *IndexController) Del() {
 	s.AjaxOk("delete success")
 }
 
+// Start 启动指定隧道服务
+// 根据隧道ID启动对应的隧道服务
+// URL: POST /index/start?id=xxx
 func (s *IndexController) Start() {
 	id := s.GetIntNoErr("id")
 	if err := server.StartTask(id); err != nil {
@@ -205,6 +272,10 @@ func (s *IndexController) Start() {
 	s.AjaxOk("start success")
 }
 
+// HostList 主机列表管理
+// GET请求：显示主机列表页面
+// POST请求：返回主机列表数据（AJAX接口），支持分页、按客户端筛选和搜索
+// URL: GET/POST /index/hostlist
 func (s *IndexController) HostList() {
 	if s.Ctx.Request.Method == "GET" {
 		s.Data["client_id"] = s.getEscapeString("client_id")
@@ -219,6 +290,10 @@ func (s *IndexController) HostList() {
 	}
 }
 
+// GetHost 获取单个主机详情（AJAX接口）
+// 根据主机ID返回主机的详细配置信息
+// 返回JSON格式数据，包含状态码和主机数据
+// URL: POST /index/gethost?id=xxx
 func (s *IndexController) GetHost() {
 	if s.Ctx.Request.Method == "POST" {
 		data := make(map[string]interface{})
@@ -233,6 +308,9 @@ func (s *IndexController) GetHost() {
 	}
 }
 
+// DelHost 删除指定主机配置
+// 根据主机ID删除主机配置信息
+// URL: POST /index/delhost?id=xxx
 func (s *IndexController) DelHost() {
 	id := s.GetIntNoErr("id")
 	if err := file.GetDb().DelHost(id); err != nil {
@@ -241,6 +319,10 @@ func (s *IndexController) DelHost() {
 	s.AjaxOk("delete success")
 }
 
+// AddHost 添加新主机配置
+// GET请求：显示添加主机的表单页面
+// POST请求：处理主机创建逻辑，包括主机域名、目标地址、SSL证书等配置
+// URL: GET/POST /index/addhost
 func (s *IndexController) AddHost() {
 	if s.Ctx.Request.Method == "GET" {
 		s.Data["client_id"] = s.getEscapeString("client_id")
@@ -272,6 +354,10 @@ func (s *IndexController) AddHost() {
 	}
 }
 
+// EditHost 编辑主机配置
+// GET请求：显示编辑主机的表单页面，预填充现有配置
+// POST请求：处理主机更新逻辑，包括域名重复检测、配置更新等
+// URL: GET/POST /index/edithost?id=xxx
 func (s *IndexController) EditHost() {
 	id := s.GetIntNoErr("id")
 	if s.Ctx.Request.Method == "GET" {
