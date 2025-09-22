@@ -122,9 +122,10 @@ func main() {
 	// init service
 	options := make(service.KeyValue)
 	// 构造系统服务配置（跨平台），用于安装/启动/停止等控制。
+	progName := programBaseName()
 	svcConfig := &service.Config{
-		Name:        "Npx",
-		DisplayName: "npx内网穿透代理服务器",
+		Name:        progName,
+		DisplayName: progName + "内网穿透代理服务器",
 		Description: "一款轻量级、功能强大的内网穿透代理服务器。支持tcp、udp流量转发，支持内网http代理、内网socks5代理，同时支持snappy压缩、站点保护、加密传输、多路复用、header修改等。支持web图形化管理，集成多用户模式。",
 		Option:      options,
 	}
@@ -419,4 +420,21 @@ func (c DefaultConfig) ApplyToAppConfig() {
 	_ = beego.AppConfig.Set("http_add_origin_header", strconv.FormatBool(c.HttpAddOriginHeader))
 
 	_ = beego.AppConfig.Set("disconnect_timeout", strconv.Itoa(c.DisconnectTimeout))
+}
+
+// programBaseName 返回当前运行程序的基名（去除 .exe 扩展名）
+func programBaseName() string {
+	exe, err := os.Executable()
+	if err != nil {
+		base := filepath.Base(os.Args[0])
+		if strings.HasSuffix(strings.ToLower(base), ".exe") {
+			return strings.TrimSuffix(base, ".exe")
+		}
+		return base
+	}
+	base := filepath.Base(exe)
+	if strings.HasSuffix(strings.ToLower(base), ".exe") {
+		return strings.TrimSuffix(base, ".exe")
+	}
+	return base
 }

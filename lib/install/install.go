@@ -150,7 +150,8 @@ WantedBy=multi-user.target
 func UpdateNps() {
 	destPath := downloadLatest("server")
 	//复制文件到对应目录
-	copyStaticFile(destPath, "npx")
+	bin := programBaseName()
+	copyStaticFile(destPath, bin, true)
 	fmt.Println("Update completed, please restart")
 }
 
@@ -161,7 +162,8 @@ func UpdateNps() {
 func UpdateNpc() {
 	destPath := downloadLatest("client")
 	//复制文件到对应目录
-	copyStaticFile(destPath, "npc")
+	bin := programBaseName()
+	copyStaticFile(destPath, bin, false)
 	fmt.Println("Update completed, please restart")
 }
 
@@ -215,70 +217,55 @@ func downloadLatest(bin string) string {
 // copyStaticFile 将解压目录中的二进制与静态资源复制到系统安装目录，并返回最终可执行文件路径。
 // 参数：
 // - srcPath: 解压后的源目录（包含可执行文件及 web 资源等）
-// - bin:     可执行文件名（例如 "nps" 或 "npc"），不带扩展名
+// - bin:     目标可执行文件名（不带扩展名），通常为当前程序名
+// - isServer: 是否为服务端安装。为 true 时将强制复制 web 静态资源，缺失则失败
 // 行为说明：
-// - 若 bin == "npx"（服务端），会额外复制 web/views 与 web/static 到安装目录。
-// - 非 Windows 平台：优先复制到 /usr/bin，若失败则退回 /usr/local/bin；并在对应目录生成 "*-update" 文件供在线更新使用。
-// - Windows 平台：将 exe 复制到应用目录（common.GetAppPath），同时生成 "*-update.exe"。
-// 权限：
-// - 非 Windows 平台会对复制结果设置可执行权限（0755/0766 等）。
-func copyStaticFile(srcPath, bin string) string {
-	// 计算安装目录根路径，例如 /etc/nps、C:\\Program Files\\nps（视实现而定）
+// - 服务端（isServer=true）：会复制 web/views 与 web/static；若缺失任一目录则失败中止
+// - 非 Windows 平台：优先复制到 /usr/bin，若失败则退回 /usr/local/bin；并在对应目录生成 "*-update"
+// - Windows 平台：复制 exe 到应用目录，同时生成 "*-update.exe"
+// - 返回最终可执行文件路径
+func copyStaticFile(srcPath, bin string, isServer bool) string {
 	path := common.GetInstallPath()
 
-	// 若为 nps 服务端，需要同步 web 静态资源与视图模板到安装目录
-	if bin == "npx" {
-		// 复制 web/views 目录下的所有文件到安装目录的 web/views
-		if err := CopyDir(filepath.Join(srcPath, "web", "views"), filepath.Join(path, "web", "views")); err != nil {
-			// 复制失败直接终止程序，保证安装/更新的原子性
+	// 服务端：严格要求 web 资源存在并复制
+	if isServer {
+		viewsSrc := filepath.Join(srcPath, "web", "views")
+		staticSrc := filepath.Join(srcPath, "web", "static")
+		if !common.FileExists(viewsSrc) || !common.FileExists(staticSrc) {
+			log.Fatalln("web resources not found, install/update aborted")
+		}
+		if err := CopyDir(viewsSrc, filepath.Join(path, "web", "views")); err != nil {
 			log.Fatalln(err)
 		}
-		// 非 Windows 平台下为 views 目录设置 0766 权限，确保可读写执行
 		chMod(filepath.Join(path, "web", "views"), 0766)
-
-		// 复制 web/static 静态资源到安装目录的 web/static
-		if err := CopyDir(filepath.Join(srcPath, "web", "static"), filepath.Join(path, "web", "static")); err != nil {
+		if err := CopyDir(staticSrc, filepath.Join(path, "web", "static")); err != nil {
 			log.Fatalln(err)
 		}
-		// 为 static 目录设置 0766 权限
 		chMod(filepath.Join(path, "web", "static"), 0766)
 	}
 
-	// binPath 默认取当前进程（正在运行的可执行文件）的绝对路径，
-	// 在复制成功后会被覆盖为系统中的目标安装路径，便于调用方获知新位置
 	binPath, _ := filepath.Abs(os.Args[0])
 
-	// 非 Windows 平台的安装逻辑
 	if !common.IsWindows() {
-		// 优先复制到 /usr/bin/{bin}
 		if _, err := copyFile(filepath.Join(srcPath, bin), "/usr/bin/"+bin); err != nil {
-			// 若权限不足或不存在，回退到 /usr/local/bin/{bin}
 			if _, err := copyFile(filepath.Join(srcPath, bin), "/usr/local/bin/"+bin); err != nil {
-				// 两个标准路径都失败，则直接失败退出
 				log.Fatalln(err)
 			} else {
-				// 在 /usr/local/bin 下生成 {bin}-update，供后续平滑更新使用
 				copyFile(filepath.Join(srcPath, bin), "/usr/local/bin/"+bin+"-update")
-				// 赋予可执行权限
 				chMod("/usr/local/bin/"+bin+"-update", 0755)
-				// 记录最终安装的可执行文件路径
 				binPath = "/usr/local/bin/" + bin
 			}
 		} else {
-			// 已成功复制到 /usr/bin；同样生成 {bin}-update 以便在线更新时替换
 			copyFile(filepath.Join(srcPath, bin), "/usr/bin/"+bin+"-update")
 			chMod("/usr/bin/"+bin+"-update", 0755)
 			binPath = "/usr/bin/" + bin
 		}
 	} else {
-		// Windows 平台：复制 {bin}.exe 到应用目录，同时复制一份 {bin}-update.exe
 		copyFile(filepath.Join(srcPath, bin+".exe"), filepath.Join(common.GetAppPath(), bin+"-update.exe"))
 		copyFile(filepath.Join(srcPath, bin+".exe"), filepath.Join(common.GetAppPath(), bin+".exe"))
 	}
 
-	// 最终对可执行文件路径设置 0755（Windows 下此调用被 chMod 内部忽略）
 	chMod(binPath, 0755)
-	// 返回最终可执行文件所在路径，供调用方使用（打印提示、生成服务文件等）
 	return binPath
 }
 
@@ -292,7 +279,8 @@ func InstallNpc() {
 			log.Fatal(err)
 		}
 	}
-	copyStaticFile(common.GetAppPath(), "npc")
+	bin := programBaseName()
+	copyStaticFile(common.GetAppPath(), bin, false)
 }
 
 // InstallNps 安装 nps（服务端）：
@@ -317,18 +305,19 @@ func InstallNps() string {
 		}
 
 	}
-	binPath := copyStaticFile(common.GetAppPath(), "nps")
+	bin := programBaseName()
+	binPath := copyStaticFile(common.GetAppPath(), bin, true)
 	log.Println("install ok!")
 	log.Println("Static files and configuration files in the current directory will be useless")
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
-		log.Println(`You can start with:
-npx start|stop|restart|uninstall|update or nps-update update
-anywhere!`)
+		log.Println("You can start with:")
+		log.Println(bin, "start|stop|restart|uninstall|update or "+bin+"-update update")
+		log.Println("anywhere!")
 	} else {
-		log.Println(`You can copy executable files to any directory and start working with:
-npx.exe start|stop|restart|uninstall|update or nps-update.exe update
-now!`)
+		log.Println("You can copy executable files to any directory and start working with:")
+		log.Println(bin+".exe", "start|stop|restart|uninstall|update or "+bin+"-update.exe update")
+		log.Println("now!")
 	}
 	chMod(common.GetLogPath(), 0777)
 	return binPath
@@ -351,18 +340,19 @@ func ReInstallNps() string {
 	} else {
 		log.Fatalln("没有找到配置文件，故此没有设置配置文件权限")
 	}
-	binPath := copyStaticFile(common.GetAppPath(), "npx")
+	bin := programBaseName()
+	binPath := copyStaticFile(common.GetAppPath(), bin, true)
 	log.Println("install ok!")
 	log.Println("Static files and configuration files in the current directory will be useless")
 	log.Println("The new configuration file is located in", path, "you can edit them")
 	if !common.IsWindows() {
-		log.Println(`You can start with:
-npx start|stop|restart|uninstall|update|install --force or nps-update update
-anywhere!`)
+		log.Println("You can start with:")
+		log.Println(bin, "start|stop|restart|uninstall|update|install --force or "+bin+"-update update")
+		log.Println("anywhere!")
 	} else {
-		log.Println(`You can copy executable files to any directory and start working with:
-npx.exe start|stop|restart|uninstall|update|install --force or nps-update.exe update
-now!`)
+		log.Println("You can copy executable files to any directory and start working with:")
+		log.Println(bin+".exe", "start|stop|restart|uninstall|update|install --force or "+bin+"-update.exe update")
+		log.Println("now!")
 	}
 	chMod(common.GetLogPath(), 0777)
 	return binPath
@@ -475,4 +465,22 @@ func chMod(name string, mode os.FileMode) {
 	if !common.IsWindows() {
 		os.Chmod(name, mode)
 	}
+}
+
+// programBaseName 返回当前运行程序的基名（去除 .exe 扩展名）
+func programBaseName() string {
+	exe, err := os.Executable()
+	if err != nil {
+		// 退回到 Args[0]
+		base := filepath.Base(os.Args[0])
+		if strings.HasSuffix(strings.ToLower(base), ".exe") {
+			return strings.TrimSuffix(base, ".exe")
+		}
+		return base
+	}
+	base := filepath.Base(exe)
+	if strings.HasSuffix(strings.ToLower(base), ".exe") {
+		return strings.TrimSuffix(base, ".exe")
+	}
+	return base
 }
