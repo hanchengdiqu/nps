@@ -1,13 +1,7 @@
 package main
 
-/*
-#include <stdlib.h>
-static void my_free(void* p){ free(p); }  // ← 补上这个封装，避免与运行时符号冲突
-*/
-import "C"
-
 import (
-	"unsafe"
+	"C"
 
 	"ehang.io/nps/client"
 	"ehang.io/nps/lib/common"
@@ -18,26 +12,19 @@ import (
 var cl *client.TRPClient
 
 //export StartClientByVerifyKey
-func StartClientByVerifyKey(serverAddr, verifyKey, connType, proxyUrl *C.char) C.int {
+func StartClientByVerifyKey(serverAddr, verifyKey, connType, proxyUrl *C.char) int {
 	_ = logs.SetLogger("store")
 	if cl != nil {
 		cl.Close()
 	}
-	cl = client.NewRPClient(
-		C.GoString(serverAddr),
-		C.GoString(verifyKey),
-		C.GoString(connType),
-		C.GoString(proxyUrl),
-		nil,
-		60,
-	)
+	cl = client.NewRPClient(C.GoString(serverAddr), C.GoString(verifyKey), C.GoString(connType), C.GoString(proxyUrl), nil, 60)
 	cl.Start()
-	return C.int(1)
+	return 1
 }
 
 //export GetClientStatus
-func GetClientStatus() C.int {
-	return C.int(client.NowStatus)
+func GetClientStatus() int {
+	return client.NowStatus
 }
 
 //export CloseClient
@@ -57,11 +44,6 @@ func Logs() *C.char {
 	return C.CString(common.GetLogMsg())
 }
 
-//export NpcFreeCString
-func NpcFreeCString(p *C.char) {
-	if p != nil {
-		C.my_free(unsafe.Pointer(p))
-	}
+func main() {
+	// Need a main function to make CGO compile package as C shared library
 }
-
-func main() {}

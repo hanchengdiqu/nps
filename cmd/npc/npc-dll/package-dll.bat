@@ -16,7 +16,7 @@ del npc_sdk.dll 2>nul
 go clean -cache -testcache
 
 rem 关键：-x -work 会打印并保留临时目录
-go build -x -work -a -buildmode=c-shared -o npc_sdk.dll . 1>build.log 2>&1
+go build -x -work  -tags "sdk" -a -buildmode=c-shared -o npc_sdk.dll . 1>build.log 2>&1
 
 notepad build.log
 
