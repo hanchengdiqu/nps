@@ -1,0 +1,1 @@
+go_build_ehang_io_npc_windows  -server=127.0.0.1:65203 -vkey=xhdx21rjj0ncslvv -type=tcp

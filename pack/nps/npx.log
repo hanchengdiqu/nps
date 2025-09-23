@@ -1,0 +1,27 @@
+2025/09/22 01:46:47.331 [I] [nps.go:304]  the version of server is 0.26.10 ,allow client core version to be 0.26.0
+2025/09/22 01:46:47.333 [I] [nps.go:304]  the version of server is 0.26.10 ,allow client core version to be 0.26.0
+2025/09/22 01:46:47.611 [I] [connection.go:36]  server start, the bridge type is tcp, the bridge port is 65203
+2025/09/22 01:46:47.710 [I] [connection.go:36]  server start, the bridge type is tcp, the bridge port is 65203
+2025/09/22 01:46:47.879 [E] [bridge.go:124]  listen tcp 0.0.0.0:65203: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025/09/22 01:46:47.943 [I] [server.go:200]  tunnel task  start mode：httpHostServer port 0
+2025/09/22 01:46:47.943 [I] [connection.go:71]  web management start, access port is 65202
+2025/09/22 01:46:48.115 [I] [connection.go:62]  start https listener, port is 65443
+2025/09/22 01:46:48.115 [I] [connection.go:53]  start http listener, port is 65508
+2025/09/22 10:52:40.916 [I] [nps.go:304]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/09/22 10:52:40.920 [I] [nps.go:304]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/09/22 10:52:41.070 [I] [connection.go:36]  server start, the bridge type is tcp, the bridge port is 65203
+2025/09/22 10:52:41.199 [I] [server.go:200]  tunnel task  start mode：httpHostServer port 0
+2025/09/22 10:52:41.200 [I] [connection.go:71]  web management start, access port is 65202
+2025/09/22 10:52:41.246 [I] [connection.go:62]  start https listener, port is 65443
+2025/09/22 10:52:41.247 [I] [connection.go:53]  start http listener, port is 65508
+2025/09/22 10:52:41.617 [I] [connection.go:36]  server start, the bridge type is tcp, the bridge port is 65203
+2025/09/22 10:52:42.218 [E] [bridge.go:124]  listen tcp 0.0.0.0:65203: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025/09/23 09:27:51.247 [I] [nps.go:304]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/09/23 09:27:51.376 [I] [nps.go:304]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/09/23 09:27:51.992 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/09/23 09:27:52.037 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/09/23 09:27:52.477 [E] [bridge.go:124]  listen tcp 0.0.0.0:65203: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.
+2025/09/23 09:27:52.681 [I] [server.go:280]  tunnel task  start mode：httpHostServer port 0
+2025/09/23 09:27:52.681 [I] [connection.go:151]  web management start, access port is 65202
+2025/09/23 09:27:52.683 [I] [connection.go:133]  start https listener, port is 65443
+2025/09/23 09:27:52.683 [I] [connection.go:115]  start http listener, port is 65508
