@@ -30,6 +30,7 @@ func Init() {
 			beego.NSAutoRouter(&controllers.LoginController{}),   // 登录控制器自动路由
 			beego.NSAutoRouter(&controllers.ClientController{}),  // 客户端管理控制器自动路由
 			beego.NSAutoRouter(&controllers.AuthController{}),    // 认证控制器自动路由
+			beego.NSAutoRouter(&controllers.StatusController{}),  // 系统状态控制器自动路由
 		)
 		// 将命名空间添加到Beego应用中
 		beego.AddNamespace(ns)
@@ -42,5 +43,6 @@ func Init() {
 		beego.AutoRouter(&controllers.LoginController{})   // 登录控制器自动路由
 		beego.AutoRouter(&controllers.ClientController{})  // 客户端管理控制器自动路由
 		beego.AutoRouter(&controllers.AuthController{})    // 认证控制器自动路由
+		beego.AutoRouter(&controllers.StatusController{})  // 系统状态控制器自动路由
 	}
 }
