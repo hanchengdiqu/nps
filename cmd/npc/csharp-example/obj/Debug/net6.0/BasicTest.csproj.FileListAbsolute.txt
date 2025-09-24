@@ -1,0 +1,15 @@
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.GeneratedMSBuildEditorConfig.editorconfig
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.AssemblyInfoInputs.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.AssemblyInfo.cs
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.csproj.CoreCompileInputs.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.sourcelink.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\BasicTest.exe
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\BasicTest.deps.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\BasicTest.runtimeconfig.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\BasicTest.dll
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\BasicTest.pdb
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.dll
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\refint\BasicTest.dll
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.pdb
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\BasicTest.genruntimeconfig.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\ref\BasicTest.dll

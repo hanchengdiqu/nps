@@ -1,0 +1,16 @@
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\npc-sdk.dll
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\NpcSdkExample.exe
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\NpcSdkExample.deps.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\NpcSdkExample.runtimeconfig.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\NpcSdkExample.dll
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\NpcSdkExample.pdb
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.GeneratedMSBuildEditorConfig.editorconfig
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.AssemblyInfoInputs.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.AssemblyInfo.cs
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.csproj.CoreCompileInputs.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.sourcelink.json
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.dll
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\refint\NpcSdkExample.dll
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.pdb
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\NpcSdkExample.genruntimeconfig.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\ref\NpcSdkExample.dll
