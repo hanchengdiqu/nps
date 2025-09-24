@@ -19,8 +19,8 @@ namespace NpcSdkExample
                 Console.WriteLine();
 
                 // 配置连接参数（请根据实际情况修改）
-                string serverAddr = "www.198408.xyz:65203";  // NPS 服务器地址
-                string verifyKey = "abcdefg";   // 验证密钥
+                string serverAddr = "127.0.0.1:8024";  // NPS 服务器地址
+                string verifyKey = "your_verify_key";   // 验证密钥
                 string connType = "tcp";                // 连接类型
                 string proxyUrl = "";                   // 代理URL（可选）
 
@@ -103,10 +103,10 @@ namespace NpcSdkExample
                 }
 
                 // 关闭客户端
-                //Console.WriteLine();
-                //Console.WriteLine("正在关闭客户端...");
-                //NpcSdk.CloseClient();
-                //Console.WriteLine("✓ 客户端已关闭");
+                Console.WriteLine();
+                Console.WriteLine("正在关闭客户端...");
+                NpcSdk.CloseClient();
+                Console.WriteLine("✓ 客户端已关闭");
             }
             catch (DllNotFoundException)
             {
