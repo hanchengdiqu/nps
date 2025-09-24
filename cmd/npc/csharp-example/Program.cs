@@ -30,9 +30,37 @@ namespace NpcSdkExample
                 Console.WriteLine($"  连接类型: {connType}");
                 Console.WriteLine();
 
-                // 启动客户端
-                Console.WriteLine("正在启动 NPC 客户端...");
-                int result = NpcSdk.StartClientByVerifyKey(serverAddr, verifyKey, connType, proxyUrl);
+                // 演示不同的启动方式
+                Console.WriteLine("请选择启动方式:");
+                Console.WriteLine("1. 使用自定义参数启动 (StartClientByVerifyKey)");
+                Console.WriteLine("2. 使用默认配置启动 (InitDef)");
+                Console.WriteLine("3. 使用默认配置+自定义密钥启动 (InitDefWithKey)");
+                Console.Write("请输入选择 (1-3): ");
+                
+                string choice = Console.ReadLine() ?? "1";
+                int result;
+
+                switch (choice)
+                {
+                    case "2":
+                        Console.WriteLine("正在使用默认配置启动 NPC 客户端...");
+                        Console.WriteLine("默认配置: 服务器=www.198408.xyz:65203, 密钥=abcdefg, 类型=tcp");
+                        result = NpcSdk.InitDef();
+                        break;
+                    
+                    case "3":
+                        Console.Write("请输入自定义验证密钥: ");
+                        string customKey = Console.ReadLine() ?? "abcdefg";
+                        Console.WriteLine($"正在使用默认配置+自定义密钥启动 NPC 客户端...");
+                        Console.WriteLine($"配置: 服务器=www.198408.xyz:65203, 密钥={customKey}, 类型=tcp");
+                        result = NpcSdk.InitDefWithKey(customKey);
+                        break;
+                    
+                    default:
+                        Console.WriteLine("正在使用自定义参数启动 NPC 客户端...");
+                        result = NpcSdk.StartClientByVerifyKey(serverAddr, verifyKey, connType, proxyUrl);
+                        break;
+                }
                 
                 if (result == 1)
                 {

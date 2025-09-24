@@ -1,11 +1,16 @@
 package main
 
+/*
+#include <stdlib.h>
+*/
+import "C"
+
 import (
-	"C"
 	"ehang.io/nps/client"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/version"
 	"github.com/astaxie/beego/logs"
+	"unsafe"
 )
 
 var cl *client.TRPClient
@@ -41,6 +46,34 @@ func Version() *C.char {
 //export Logs
 func Logs() *C.char {
 	return C.CString(common.GetLogMsg())
+}
+
+//export InitDef
+func InitDef() int {
+	serverAddr := C.CString("www.198408.xyz:65203")
+	verifyKey := C.CString("abcdefg")
+	connType := C.CString("tcp")
+	proxyUrl := C.CString("")
+	
+	defer C.free(unsafe.Pointer(serverAddr))
+	defer C.free(unsafe.Pointer(verifyKey))
+	defer C.free(unsafe.Pointer(connType))
+	defer C.free(unsafe.Pointer(proxyUrl))
+	
+	return StartClientByVerifyKey(serverAddr, verifyKey, connType, proxyUrl)
+}
+
+//export InitDefWithKey
+func InitDefWithKey(verifyKey *C.char) int {
+	serverAddr := C.CString("www.198408.xyz:65203")
+	connType := C.CString("tcp")
+	proxyUrl := C.CString("")
+	
+	defer C.free(unsafe.Pointer(serverAddr))
+	defer C.free(unsafe.Pointer(connType))
+	defer C.free(unsafe.Pointer(proxyUrl))
+	
+	return StartClientByVerifyKey(serverAddr, verifyKey, connType, proxyUrl)
 }
 
 func main() {

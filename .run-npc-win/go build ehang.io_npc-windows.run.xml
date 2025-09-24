@@ -2,10 +2,11 @@
   <configuration default="false" name="go build ehang.io/npc-windows" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="nps" />
     <working_directory value="$PROJECT_DIR$" />
-    <kind value="DIRECTORY" />
+    <go_parameters value="-o npc.exe -gcflags &quot;all=-N -l&quot;" />
+    <kind value="FILE" />
     <package value="ehang.io/nps" />
     <directory value="$PROJECT_DIR$/cmd/npc" />
-    <filePath value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/cmd/npc/npc.go" />
     <output_directory value="$PROJECT_DIR$/pack/npc" />
     <option name="run" value="false" />
     <method v="2" />

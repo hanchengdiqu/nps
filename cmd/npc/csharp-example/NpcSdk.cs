@@ -55,6 +55,26 @@ namespace NpcSdkExample
         private static extern IntPtr Logs();
 
         /// <summary>
+        /// 使用默认配置初始化客户端
+        /// 服务器地址: www.198408.xyz:65203
+        /// 验证密钥: abcdefg
+        /// 连接类型: tcp
+        /// </summary>
+        /// <returns>成功返回1，失败返回其他值</returns>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int InitDef();
+
+        /// <summary>
+        /// 使用自定义验证密钥初始化客户端
+        /// 服务器地址: www.198408.xyz:65203 (默认)
+        /// 连接类型: tcp (默认)
+        /// </summary>
+        /// <param name="verifyKey">自定义验证密钥</param>
+        /// <returns>成功返回1，失败返回其他值</returns>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int InitDefWithKey([MarshalAs(UnmanagedType.LPStr)] string verifyKey);
+
+        /// <summary>
         /// 获取版本信息（C# 友好的方法）
         /// </summary>
         /// <returns>版本字符串</returns>
@@ -95,20 +115,20 @@ namespace NpcSdkExample
             Error = -1
         }
 
-        /// <summary>
-        /// 获取客户端状态（枚举形式）
-        /// </summary>
-        /// <returns>客户端状态枚举</returns>
         public static ClientStatus GetClientStatusEnum()
         {
             int status = GetClientStatus();
-            return status switch
+            switch (status)
             {
-                0 => ClientStatus.Disconnected,
-                1 => ClientStatus.Connected,
-                2 => ClientStatus.Connecting,
-                _ => ClientStatus.Error
-            };
+                case 0:
+                    return ClientStatus.Disconnected;
+                case 1:
+                    return ClientStatus.Connected;
+                case 2:
+                    return ClientStatus.Connecting;
+                default:
+                    return ClientStatus.Error;
+            }
         }
     }
 }
