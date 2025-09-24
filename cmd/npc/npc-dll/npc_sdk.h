@@ -21,6 +21,11 @@ extern const char *_GoStringPtr(_GoString_ s);
 /* Start of preamble from import "C" comments.  */
 
 
+#line 3 "sdk.go"
+
+#include <stdlib.h>
+
+#line 1 "cgo-generated-wrapper"
 
 
 /* End of preamble from import "C" comments.  */
@@ -82,11 +87,15 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern __declspec(dllexport) GoInt StartClientByVerifyKey(char* serverAddr, char* verifyKey, char* connType, char* proxyUrl);
-extern __declspec(dllexport) GoInt GetClientStatus(void);
+extern __declspec(dllexport) int StartClientByVerifyKey(char* serverAddr, char* verifyKey, char* connType, char* proxyUrl);
+extern __declspec(dllexport) int GetClientStatus(void);
 extern __declspec(dllexport) void CloseClient(void);
 extern __declspec(dllexport) char* Version(void);
 extern __declspec(dllexport) char* Logs(void);
+
+// 提供给 C#/C 侧释放用，避免 CString 泄漏
+//
+extern __declspec(dllexport) void NpcFreeCString(char* p);
 
 #ifdef __cplusplus
 }
