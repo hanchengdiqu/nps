@@ -104,8 +104,8 @@ func main() {
 	// 初始化系统服务配置（支持 Windows Service、systemd、SysV）
 	options := make(service.KeyValue)
 	svcConfig := &service.Config{
-		Name:        "Npc",        // 服务名
-		DisplayName: "nps内网穿透客户端", // 显示名
+		Name:        "NpxClient", // 服务名
+		DisplayName: "npx客户端", // 显示名
 		Description: "一款轻量级、功能强大的内网穿透代理服务器。支持tcp、udp流量转发，支持内网http代理、内网socks5代理，同时支持snappy压缩、站点保护、加密传输、多路复用、header修改等。支持web图形化管理，集成多用户模式。",
 		Option:      options,
 	}
