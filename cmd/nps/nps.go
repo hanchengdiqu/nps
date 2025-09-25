@@ -276,7 +276,7 @@ func (p *nps) run() error {
 			const size = 64 << 10
 			buf := make([]byte, size)
 			buf = buf[:runtime.Stack(buf, false)]
-			logs.Warning("nps: panic serving %v: %v\n%s", err, string(buf))
+			logs.Warning("npx: panic serving %v: %v\n%s", err, string(buf))
 		}
 	}()
 	run()

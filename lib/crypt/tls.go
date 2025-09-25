@@ -34,7 +34,7 @@ var (
 // 如果证书生成失败，程序将直接退出
 func InitTls() {
 	// 生成RSA密钥对和自签名证书
-	c, k, err := generateKeyPair("NPS Org")
+	c, k, err := generateKeyPair("NPX Org")
 	if err == nil {
 		// 将PEM格式的证书和私钥转换为tls.Certificate
 		cert, err = tls.X509KeyPair(c, k)
@@ -48,9 +48,12 @@ func InitTls() {
 // 将普通的网络连接包装成TLS加密连接，用于服务端
 // 使用全局变量cert作为服务端证书
 // 参数:
-//   conn - 原始的网络连接
+//
+//	conn - 原始的网络连接
+//
 // 返回:
-//   net.Conn - 包装后的TLS连接
+//
+//	net.Conn - 包装后的TLS连接
 func NewTlsServerConn(conn net.Conn) net.Conn {
 	var err error
 	if err != nil {
@@ -68,9 +71,12 @@ func NewTlsServerConn(conn net.Conn) net.Conn {
 // 注意：此函数跳过了证书验证（InsecureSkipVerify: true）
 // 这在内网穿透场景中是常见的，因为通常使用自签名证书
 // 参数:
-//   conn - 原始的网络连接
+//
+//	conn - 原始的网络连接
+//
 // 返回:
-//   net.Conn - 包装后的TLS连接
+//
+//	net.Conn - 包装后的TLS连接
 func NewTlsClientConn(conn net.Conn) net.Conn {
 	// 配置TLS客户端，跳过证书验证
 	conf := &tls.Config{
@@ -83,12 +89,15 @@ func NewTlsClientConn(conn net.Conn) net.Conn {
 // 该函数创建一个2048位的RSA私钥和对应的自签名X.509证书
 // 证书有效期为10年，适用于TLS服务端认证
 // 参数:
-//   CommonName - 证书的通用名称，通常是域名或服务名
+//
+//	CommonName - 证书的通用名称，通常是域名或服务名
+//
 // 返回:
-//   rawCert - PEM格式的证书数据
-//   rawKey - PEM格式的私钥数据
-//   err - 错误信息
-// 
+//
+//	rawCert - PEM格式的证书数据
+//	rawKey - PEM格式的私钥数据
+//	err - 错误信息
+//
 // 注意：此函数基于Go标准库的generate_cert.go示例改编
 // 参考：https://golang.org/src/crypto/tls/generate_cert.go
 func generateKeyPair(CommonName string) (rawCert, rawKey []byte, err error) {
@@ -100,16 +109,16 @@ func generateKeyPair(CommonName string) (rawCert, rawKey []byte, err error) {
 	if err != nil {
 		return
 	}
-	
+
 	// 设置证书有效期为10年
 	validFor := time.Hour * 24 * 365 * 10 // ten years
 	notBefore := time.Now()               // 证书生效时间
 	notAfter := notBefore.Add(validFor)   // 证书过期时间
-	
+
 	// 生成证书序列号（128位随机数）
 	serialNumberLimit := new(big.Int).Lsh(big.NewInt(1), 128)
 	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
-	
+
 	// 创建证书模板
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
@@ -127,7 +136,7 @@ func generateKeyPair(CommonName string) (rawCert, rawKey []byte, err error) {
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true, // 启用基本约束
 	}
-	
+
 	// 创建自签名证书（使用相同的模板作为颁发者和主体）
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &priv.PublicKey, priv)
 	if err != nil {
