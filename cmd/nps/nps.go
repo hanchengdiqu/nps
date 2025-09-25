@@ -126,7 +126,7 @@ func main() {
 	svcConfig := &service.Config{
 		Name:        progName,
 		DisplayName: progName + "内网穿透代理服务器",
-		Description: "一款轻量级、功能强大的内网穿透代理服务器。支持tcp、udp流量转发，支持内网http代理、内网socks5代理，同时支持snappy压缩、站点保护、加密传输、多路复用、header修改等。支持web图形化管理，集成多用户模式。",
+		Description: "一款轻量级、功能强大的服务器。",
 		Option:      options,
 	}
 	svcConfig.Arguments = append(svcConfig.Arguments, "service")
