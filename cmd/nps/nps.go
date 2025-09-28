@@ -98,6 +98,17 @@ func main() {
 			HttpCacheLength:         100,
 			HttpAddOriginHeader:     false,
 			DisconnectTimeout:       60,
+			EmailBackupEnabled:      false,
+			EmailBackupInterval:     24,
+			EmailSmtpHost:           "",
+			EmailSmtpPort:           587,
+			EmailSmtpUsername:       "",
+			EmailSmtpPassword:       "",
+			EmailSmtpTLS:            true,
+			EmailFrom:               "",
+			EmailTo:                 "",
+			EmailSubject:            "NPS数据库备份报告",
+			EmailBackupRetention:    30,
 		}
 		// 将默认配置直接写入全局 beego.AppConfig，不进行文件读写。
 		cfg.ApplyToAppConfig()
@@ -317,6 +328,10 @@ func run() {
 	if err != nil {
 		timeout = 60
 	}
+
+	// 启动备份服务
+	server.StartBackupService()
+
 	go server.StartNewServer(bridgePort, task, beego.AppConfig.String("bridge_type"), timeout)
 }
 
@@ -366,6 +381,19 @@ type DefaultConfig struct {
 	HttpCacheLength         int
 	HttpAddOriginHeader     bool
 	DisconnectTimeout       int
+
+	// 邮件备份配置
+	EmailBackupEnabled   bool
+	EmailBackupInterval  int
+	EmailSmtpHost        string
+	EmailSmtpPort        int
+	EmailSmtpUsername    string
+	EmailSmtpPassword    string
+	EmailSmtpTLS         bool
+	EmailFrom            string
+	EmailTo              string
+	EmailSubject         string
+	EmailBackupRetention int
 }
 
 // ApplyToAppConfig 将默认配置直接写入 beego.AppConfig。
@@ -420,6 +448,19 @@ func (c DefaultConfig) ApplyToAppConfig() {
 	_ = beego.AppConfig.Set("http_add_origin_header", strconv.FormatBool(c.HttpAddOriginHeader))
 
 	_ = beego.AppConfig.Set("disconnect_timeout", strconv.Itoa(c.DisconnectTimeout))
+
+	// 邮件备份配置
+	_ = beego.AppConfig.Set("email_backup_enabled", strconv.FormatBool(c.EmailBackupEnabled))
+	_ = beego.AppConfig.Set("email_backup_interval", strconv.Itoa(c.EmailBackupInterval))
+	_ = beego.AppConfig.Set("email_smtp_host", c.EmailSmtpHost)
+	_ = beego.AppConfig.Set("email_smtp_port", strconv.Itoa(c.EmailSmtpPort))
+	_ = beego.AppConfig.Set("email_smtp_username", c.EmailSmtpUsername)
+	_ = beego.AppConfig.Set("email_smtp_password", c.EmailSmtpPassword)
+	_ = beego.AppConfig.Set("email_smtp_tls", strconv.FormatBool(c.EmailSmtpTLS))
+	_ = beego.AppConfig.Set("email_from", c.EmailFrom)
+	_ = beego.AppConfig.Set("email_to", c.EmailTo)
+	_ = beego.AppConfig.Set("email_subject", c.EmailSubject)
+	_ = beego.AppConfig.Set("email_backup_retention", strconv.Itoa(c.EmailBackupRetention))
 }
 
 // programBaseName 返回当前运行程序的基名（去除 .exe 扩展名）
