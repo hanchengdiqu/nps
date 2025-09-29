@@ -119,6 +119,13 @@ func (s *StatusController) Backup() {
 
 	logs.Info("Manual backup triggered via API")
 
+	// 在创建备份前，先将内存中的数据存储到JSON文件
+	logs.Info("Storing current data to JSON files...")
+	file.GetDb().JsonDb.StoreHostToJsonFile()    // 存储主机数据
+	file.GetDb().JsonDb.StoreTasksToJsonFile()   // 存储任务数据
+	file.GetDb().JsonDb.StoreClientsToJsonFile() // 存储客户端数据
+	logs.Info("Data stored to JSON files successfully")
+
 	// 创建备份
 	backupService := backup.NewBackupService()
 	backupPath, err := backupService.CreateBackup()
