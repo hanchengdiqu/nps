@@ -16,7 +16,7 @@ package version
 */
 
 // 用于显示给用户的版本信息,对外显示的完整版本号（如 "0.26.11"）
-const VERSION = "0.26.11"
+const VERSION = "0.26.10"
 
 // Compulsory minimum version, Minimum downward compatibility to this version
 //主要用于 核心协议版本 的校验，确保客户端和服务端能够正常通信。
@@ -32,5 +32,5 @@ const VERSION = "0.26.11"
 //	    logs.Error("The client does not match the server version...")
 //	}
 func GetVersion() string {
-	return "0.26.11"
+	return "0.26.10"
 }
