@@ -1,0 +1,15 @@
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\AsyncLogTest.exe
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\AsyncLogTest.deps.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\AsyncLogTest.runtimeconfig.json
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\AsyncLogTest.dll
+C:\git\nps\cmd\npc\csharp-example\bin\Debug\net6.0\AsyncLogTest.pdb
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.GeneratedMSBuildEditorConfig.editorconfig
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.AssemblyInfoInputs.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.AssemblyInfo.cs
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.csproj.CoreCompileInputs.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.sourcelink.json
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.dll
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\refint\AsyncLogTest.dll
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.pdb
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\AsyncLogTest.genruntimeconfig.cache
+C:\git\nps\cmd\npc\csharp-example\obj\Debug\net6.0\ref\AsyncLogTest.dll

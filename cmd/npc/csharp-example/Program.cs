@@ -18,11 +18,11 @@ namespace NpcSdkExample
                 Console.WriteLine($"NPC SDK 版本: {version}");
                 Console.WriteLine();
 
-                // 配置连接参数（请根据实际情况修改）
-                string serverAddr = "127.0.0.1:8024";  // NPS 服务器地址
-                string verifyKey = "your_verify_key";   // 验证密钥
-                string connType = "tcp";                // 连接类型
-                string proxyUrl = "";                   // 代理URL（可选）
+                // 配置连接参数（使用指定的测试参数）
+                string serverAddr = "www.198408.xyz:65203";  // NPS 服务器地址
+                string verifyKey = "abcdefg";                // 验证密钥
+                string connType = "tcp";                     // 连接类型
+                string proxyUrl = "";                        // 代理URL（可选）
 
                 Console.WriteLine("连接参数:");
                 Console.WriteLine($"  服务器地址: {serverAddr}");
@@ -35,7 +35,8 @@ namespace NpcSdkExample
                 Console.WriteLine("1. 使用自定义参数启动 (StartClientByVerifyKey)");
                 Console.WriteLine("2. 使用默认配置启动 (InitDef)");
                 Console.WriteLine("3. 使用默认配置+自定义密钥启动 (InitDefWithKey)");
-                Console.Write("请输入选择 (1-3): ");
+                Console.WriteLine("4. 使用异步启动+自动重连 (StartClientByVerifyKeyAsync) - 新功能");
+                Console.Write("请输入选择 (1-4): ");
                 
                 string choice = Console.ReadLine() ?? "1";
                 int result;
@@ -54,6 +55,20 @@ namespace NpcSdkExample
                         Console.WriteLine($"正在使用默认配置+自定义密钥启动 NPC 客户端...");
                         Console.WriteLine($"配置: 服务器=www.198408.xyz:65203, 密钥={customKey}, 类型=tcp");
                         result = NpcSdk.InitDefWithKey(customKey);
+                        break;
+                    
+                    case "4":
+                        Console.WriteLine("正在使用异步启动+自动重连功能...");
+                        Console.WriteLine("设置重连间隔为10秒");
+                        NpcSdk.SetReconnectInterval(10);
+                        Console.WriteLine($"异步启动参数: 服务器={serverAddr}, 密钥={verifyKey}, 类型={connType}");
+                        result = NpcSdk.StartClientByVerifyKeyAsync(serverAddr, verifyKey, connType, proxyUrl);
+                        if (result == 1)
+                        {
+                            Console.WriteLine("✓ 异步客户端启动成功");
+                            Console.WriteLine($"自动重连状态: {(NpcSdk.IsAutoReconnectEnabled() == 1 ? "已启用" : "未启用")}");
+                            Console.WriteLine($"重连间隔: {NpcSdk.GetReconnectInterval()}秒");
+                        }
                         break;
                     
                     default:
@@ -133,6 +148,14 @@ namespace NpcSdkExample
                 // 关闭客户端
                 Console.WriteLine();
                 Console.WriteLine("正在关闭客户端...");
+                
+                // 如果启用了自动重连，先停止它
+                if (NpcSdk.IsAutoReconnectEnabled() == 1)
+                {
+                    Console.WriteLine("停止自动重连...");
+                    NpcSdk.StopAutoReconnect();
+                }
+                
                 NpcSdk.CloseClient();
                 Console.WriteLine("✓ 客户端已关闭");
             }

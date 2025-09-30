@@ -75,6 +75,50 @@ namespace NpcSdkExample
         public static extern int InitDefWithKey([MarshalAs(UnmanagedType.LPStr)] string verifyKey);
 
         /// <summary>
+        /// 异步启动客户端（新增功能）
+        /// 立即返回，不阻塞主线程，自动启用重连功能
+        /// </summary>
+        /// <param name="serverAddr">服务器地址，例如: "127.0.0.1:8024"</param>
+        /// <param name="verifyKey">验证密钥</param>
+        /// <param name="connType">连接类型，例如: "tcp"</param>
+        /// <param name="proxyUrl">代理URL，可以为空字符串</param>
+        /// <returns>成功返回1，失败返回其他值</returns>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern int StartClientByVerifyKeyAsync(
+            [MarshalAs(UnmanagedType.LPStr)] string serverAddr,
+            [MarshalAs(UnmanagedType.LPStr)] string verifyKey,
+            [MarshalAs(UnmanagedType.LPStr)] string connType,
+            [MarshalAs(UnmanagedType.LPStr)] string proxyUrl
+        );
+
+        /// <summary>
+        /// 停止自动重连
+        /// </summary>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void StopAutoReconnect();
+
+        /// <summary>
+        /// 设置重连间隔（秒）
+        /// </summary>
+        /// <param name="seconds">重连间隔秒数</param>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetReconnectInterval(int seconds);
+
+        /// <summary>
+        /// 检查是否启用了自动重连
+        /// </summary>
+        /// <returns>启用返回1，未启用返回0</returns>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IsAutoReconnectEnabled();
+
+        /// <summary>
+        /// 获取当前重连间隔（秒）
+        /// </summary>
+        /// <returns>重连间隔秒数</returns>
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetReconnectInterval();
+
+        /// <summary>
         /// 获取版本信息（C# 友好的方法）
         /// </summary>
         /// <returns>版本字符串</returns>

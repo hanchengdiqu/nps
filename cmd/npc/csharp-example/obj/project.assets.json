@@ -14,9 +14,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\git\\nps\\cmd\\npc\\csharp-example\\BasicTest.csproj",
-      "projectName": "BasicTest",
-      "projectPath": "C:\\git\\nps\\cmd\\npc\\csharp-example\\BasicTest.csproj",
+      "projectUniqueName": "C:\\git\\nps\\cmd\\npc\\csharp-example\\AsyncLogTest.csproj",
+      "projectName": "AsyncLogTest",
+      "projectPath": "C:\\git\\nps\\cmd\\npc\\csharp-example\\AsyncLogTest.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
       "outputPath": "C:\\git\\nps\\cmd\\npc\\csharp-example\\obj\\",
       "projectStyle": "PackageReference",

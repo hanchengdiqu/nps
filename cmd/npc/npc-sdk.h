@@ -88,12 +88,17 @@ extern "C" {
 #endif
 
 extern __declspec(dllexport) GoInt StartClientByVerifyKey(char* serverAddr, char* verifyKey, char* connType, char* proxyUrl);
+extern __declspec(dllexport) GoInt StartClientByVerifyKeyAsync(char* serverAddr, char* verifyKey, char* connType, char* proxyUrl);
 extern __declspec(dllexport) GoInt GetClientStatus(void);
 extern __declspec(dllexport) void CloseClient(void);
 extern __declspec(dllexport) char* Version(void);
 extern __declspec(dllexport) char* Logs(void);
 extern __declspec(dllexport) GoInt InitDef(void);
 extern __declspec(dllexport) GoInt InitDefWithKey(char* verifyKey);
+extern __declspec(dllexport) void StopAutoReconnect(void);
+extern __declspec(dllexport) GoInt SetReconnectInterval(GoInt seconds);
+extern __declspec(dllexport) GoInt IsAutoReconnectEnabled(void);
+extern __declspec(dllexport) GoInt GetReconnectInterval(void);
 
 #ifdef __cplusplus
 }
