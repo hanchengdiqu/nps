@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NpcSdkExample")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e25a26a6096e7d5cf5370152554b315a37950d0e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fe923b323c59d3b5ff19a7e6ffb01fb2381bb384")]
 [assembly: System.Reflection.AssemblyProductAttribute("NpcSdkExample")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NpcSdkExample")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

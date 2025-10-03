@@ -55,3 +55,127 @@
 2025/09/30 15:11:28.118 [W] [base.go:141]  get connection from client id 1  error the client 1 is not connect
 2025/09/30 15:11:33.129 [D] [tcp.go:62]  new tcp connection,local port 8080,client 1,remote address 127.0.0.1:6476
 2025/09/30 15:11:33.129 [W] [base.go:141]  get connection from client id 1  error the client 1 is not connect
+2025/10/01 10:13:20.032 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/01 10:13:20.231 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/01 10:13:20.231 [I] [server.go:676]  Starting scheduled backup...
+2025/10/01 10:13:20.231 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/01 10:13:20.231 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/01 10:13:20.943 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/01 10:13:20.946 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/01 10:13:20.946 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/01 10:13:21.046 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/01 10:13:21.046 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/01 10:13:21.097 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/01 10:13:21.099 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251001_101321.zip
+2025/10/01 10:13:21.119 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/01 17:44:36.292 [W] [nps.go:296]  stop...
+2025/10/01 21:01:56.313 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/01 21:01:56.618 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/01 21:01:56.618 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/01 21:01:56.618 [I] [server.go:676]  Starting scheduled backup...
+2025/10/01 21:01:56.618 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/01 21:01:56.633 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/01 21:01:56.641 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/01 21:01:56.641 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/01 21:01:56.643 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/01 21:01:56.645 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/01 21:01:56.647 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/01 21:01:56.667 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251001_210156.zip
+2025/10/01 21:01:56.682 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/02 01:08:17.704 [W] [nps.go:296]  stop...
+2025/10/02 02:51:31.196 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/02 02:51:31.300 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/02 02:51:31.300 [I] [server.go:676]  Starting scheduled backup...
+2025/10/02 02:51:31.300 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/02 02:51:31.300 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/02 02:51:31.688 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/02 02:51:31.690 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/02 02:51:31.690 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/02 02:51:31.783 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/02 02:51:31.783 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/02 02:51:31.831 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/02 02:51:31.833 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251002_025131.zip
+2025/10/02 02:51:31.888 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/02 03:24:45.367 [W] [nps.go:296]  stop...
+2025/10/02 10:16:06.048 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/02 10:16:06.174 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/02 10:16:06.174 [I] [server.go:676]  Starting scheduled backup...
+2025/10/02 10:16:06.174 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/02 10:16:06.174 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/02 10:16:06.368 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/02 10:16:06.369 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/02 10:16:06.369 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/02 10:16:06.416 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/02 10:16:06.416 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/02 10:16:06.467 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/02 10:16:06.468 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251002_101606.zip
+2025/10/02 10:16:08.239 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/02 13:03:03.869 [W] [nps.go:296]  stop...
+2025/10/02 14:15:45.863 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/02 14:15:45.996 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/02 14:15:45.996 [I] [server.go:676]  Starting scheduled backup...
+2025/10/02 14:15:45.996 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/02 14:15:45.996 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/02 14:15:46.687 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/02 14:15:46.693 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/02 14:15:46.693 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/02 14:15:46.963 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/02 14:15:46.962 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/02 14:15:47.213 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/02 14:15:47.227 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251002_141547.zip
+2025/10/02 14:15:47.240 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/02 17:18:01.933 [W] [nps.go:296]  stop...
+2025/10/02 19:32:45.735 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/02 19:32:46.040 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/02 19:32:46.040 [I] [server.go:676]  Starting scheduled backup...
+2025/10/02 19:32:46.040 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/02 19:32:46.040 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/02 19:32:46.354 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/02 19:32:46.358 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/02 19:32:46.358 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/02 19:32:46.398 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/02 19:32:46.398 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/02 19:32:46.493 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/02 19:32:46.501 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251002_193246.zip
+2025/10/02 19:32:46.521 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/02 21:32:16.086 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/02 21:32:16.501 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/02 21:32:16.501 [I] [server.go:676]  Starting scheduled backup...
+2025/10/02 21:32:16.501 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/02 21:32:16.501 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/02 21:32:16.750 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/02 21:32:16.753 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/02 21:32:16.753 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/02 21:32:16.798 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/02 21:32:16.800 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/02 21:32:16.856 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/02 21:32:16.873 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251002_213216.zip
+2025/10/02 21:32:16.925 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/02 23:51:04.387 [W] [nps.go:296]  stop...
+2025/10/03 00:38:29.398 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/03 00:38:29.831 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/03 00:38:29.831 [I] [server.go:676]  Starting scheduled backup...
+2025/10/03 00:38:29.831 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/03 00:38:29.831 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/03 00:38:30.653 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/03 00:38:30.658 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/03 00:38:30.770 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/03 00:38:30.794 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/03 00:38:30.795 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/03 00:38:31.248 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/03 00:38:31.261 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251003_003831.zip
+2025/10/03 00:38:31.290 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/03 06:38:20.457 [W] [nps.go:296]  stop...
+2025/10/03 09:50:43.752 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/03 09:50:44.014 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/03 09:50:44.014 [I] [server.go:676]  Starting scheduled backup...
+2025/10/03 09:50:44.014 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/03 09:50:44.014 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/03 09:50:44.505 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/03 09:50:44.509 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/03 09:50:44.510 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/03 09:50:44.559 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/03 09:50:44.559 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/03 09:50:44.691 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/03 09:50:44.725 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251003_095044.zip
+2025/10/03 09:50:44.755 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
