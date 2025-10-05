@@ -179,3 +179,21 @@
 2025/10/03 09:50:44.691 [I] [server.go:683]  Data stored to JSON files successfully
 2025/10/03 09:50:44.725 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251003_095044.zip
 2025/10/03 09:50:44.755 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/04 11:09:20.809 [I] [nps.go:316]  the version of server is 0.26.11 ,allow client core version to be 0.26.11
+2025/10/04 11:09:21.095 [I] [server.go:656]  Starting email backup service, interval: 24 hours
+2025/10/04 11:09:21.095 [I] [server.go:676]  Starting scheduled backup...
+2025/10/04 11:09:21.095 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/04 11:09:21.095 [I] [connection.go:83]  server start, the bridge type is tcp, the bridge port is 65203
+2025/10/04 11:09:21.452 [I] [server.go:289]  tunnel task 测试TCP隧道 start mode：tcp port 8080
+2025/10/04 11:09:21.453 [I] [server.go:289]  tunnel task  start mode：httpHostServer port 0
+2025/10/04 11:09:21.453 [I] [connection.go:151]  web management start, access port is 65202
+2025/10/04 11:09:21.497 [I] [connection.go:133]  start https listener, port is 65443
+2025/10/04 11:09:21.497 [I] [connection.go:115]  start http listener, port is 65508
+2025/10/04 11:09:21.544 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/04 11:09:21.552 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251004_110921.zip
+2025/10/04 11:09:21.563 [E] [server.go:696]  Failed to send backup email: dial tcp: lookup smtp.163.com: no such host
+2025/10/05 11:09:21.060 [I] [server.go:676]  Starting scheduled backup...
+2025/10/05 11:09:21.060 [I] [server.go:679]  Storing current data to JSON files...
+2025/10/05 11:09:21.064 [I] [server.go:683]  Data stored to JSON files successfully
+2025/10/05 11:09:21.068 [I] [backup.go:74]  Backup created: C:\Program Files\npx\backups\nps_backup_20251005_110921.zip
+2025/10/05 11:09:23.658 [I] [server.go:698]  Backup email sent successfully
